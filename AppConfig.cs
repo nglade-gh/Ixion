@@ -114,6 +114,9 @@ public class DifficultyConfig
     [JsonPropertyName("structureHp")]
     public int StructureHp { get; set; } = 100;
 
+    [JsonPropertyName("laserHeatRateModifier")]
+    public int LaserHeatRateModifier { get; set; } = 0;
+
     [JsonPropertyName("difficultyLabel")]
     [JsonIgnore]
     public string DifficultyLabel
@@ -122,7 +125,8 @@ public class DifficultyConfig
         {
             if (SpawnRateModifier != 0 || EnemyHpModifier != 0 ||
                 EnemySpeedModifier != 0 || PlayerDamageMultiplier != 1.0f ||
-                ShieldStartEnergy != 100f || StructureHp != 100)
+                ShieldStartEnergy != 100f || StructureHp != 100 ||
+                LaserHeatRateModifier != 0)
                 return $"{Preset:F0} (custom)";
             return Preset.ToString();
         }
@@ -167,7 +171,8 @@ public static class AppConfig
             EnemySpeedModifier = -40,
             PlayerDamageMultiplier = 1.5f,
             ShieldStartEnergy = 120f,
-            StructureHp = 120
+            StructureHp = 120,
+            LaserHeatRateModifier = -80
         },
         [DifficultyPreset.Normal] = new()
         {
@@ -177,7 +182,8 @@ public static class AppConfig
             EnemySpeedModifier = 0,
             PlayerDamageMultiplier = 1.0f,
             ShieldStartEnergy = 100f,
-            StructureHp = 100
+            StructureHp = 100,
+            LaserHeatRateModifier = -66
         },
         [DifficultyPreset.Hard] = new()
         {
@@ -187,7 +193,8 @@ public static class AppConfig
             EnemySpeedModifier = 30,
             PlayerDamageMultiplier = 0.8f,
             ShieldStartEnergy = 80f,
-            StructureHp = 80
+            StructureHp = 80,
+            LaserHeatRateModifier = -50
         },
         [DifficultyPreset.Expert] = new()
         {
@@ -197,7 +204,8 @@ public static class AppConfig
             EnemySpeedModifier = 60,
             PlayerDamageMultiplier = 0.5f,
             ShieldStartEnergy = 50f,
-            StructureHp = 50
+            StructureHp = 50,
+            LaserHeatRateModifier = -33
         }
     };
 
@@ -243,6 +251,7 @@ public static class AppConfig
                         _difficulty.PlayerDamageMultiplier = loaded.Difficulty.PlayerDamageMultiplier;
                         _difficulty.ShieldStartEnergy = loaded.Difficulty.ShieldStartEnergy;
                         _difficulty.StructureHp = loaded.Difficulty.StructureHp;
+                        _difficulty.LaserHeatRateModifier = loaded.Difficulty.LaserHeatRateModifier;
                     }
                     if (loaded.Input != null) _input = loaded.Input;
                     return;
@@ -314,6 +323,7 @@ public static class AppConfig
             _difficulty.PlayerDamageMultiplier = baseline.PlayerDamageMultiplier;
             _difficulty.ShieldStartEnergy = baseline.ShieldStartEnergy;
             _difficulty.StructureHp = baseline.StructureHp;
+            _difficulty.LaserHeatRateModifier = baseline.LaserHeatRateModifier;
             Save();
         }
     }

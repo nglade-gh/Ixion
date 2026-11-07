@@ -23,7 +23,11 @@ public enum MovePattern
     /// <summary>
     /// Changements de direction brusques gauche/droite pendant la descente.
     /// </summary>
-    Zigzag
+    Zigzag,
+    /// <summary>
+    /// Mouvement chaotique avec multiples oscillations sinusoïdales à différentes fréquences.
+    /// </summary>
+    Swarm
 }
 
 /// <summary>
@@ -42,7 +46,19 @@ public enum BulletPattern
     /// <summary>
     /// projectile lent qui suit le joueur.
     /// </summary>
-    Homing
+    Homing,
+    /// <summary>
+    /// Tirs rapides en dispersion (swarm).
+    /// </summary>
+    Swarm,
+    /// <summary>
+    /// Tir en éventail de 3 projectiles.
+    /// </summary>
+    Spread,
+    /// <summary>
+    /// Rotation spirale autour du joueur.
+    /// </summary>
+    Spiral
 }
 
 /// <summary>

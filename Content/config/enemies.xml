@@ -145,4 +145,68 @@
     <bulletPattern>burst</bulletPattern>
     <color>220,220,255</color>
   </enemyType>
+  <!-- Swarm: small, fast, numerous, fires in spread pattern -->
+  <enemyType>
+    <name>Swarm</name>
+    <texture>pics/space/asteroids/Asteroid_1</texture>
+    <size>28</size>
+    <scale>0.8</scale>
+    <hp>5</hp>
+    <speed>160</speed>
+    <score>8</score>
+    <fireRate>3.0</fireRate>
+    <movePattern>swarm</movePattern>
+    <amplitude>100</amplitude>
+    <frequency>2.5</frequency>
+    <bulletPattern>swarm</bulletPattern>
+    <color>255,255,180</color>
+  </enemyType>
+  <!-- Spread: medium enemy that fires 3-way spread -->
+  <enemyType>
+    <name>Spread</name>
+    <texture>pics/space/ships/Spaceship_1</texture>
+    <size>52</size>
+    <scale>1.0</scale>
+    <hp>35</hp>
+    <speed>90</speed>
+    <score>30</score>
+    <fireRate>2.0</fireRate>
+    <movePattern>zigzag</movePattern>
+    <amplitude>150</amplitude>
+    <frequency>1.8</frequency>
+    <bulletPattern>spread</bulletPattern>
+    <color>255,180,255</color>
+  </enemyType>
+  <!-- Spiral: rotating enemy that fires in spiral -->
+  <enemyType>
+    <name>Spiral</name>
+    <texture>pics/space/ships/Spaceship_3</texture>
+    <size>56</size>
+    <scale>1.0</scale>
+    <hp>40</hp>
+    <speed>75</speed>
+    <score>35</score>
+    <fireRate>1.8</fireRate>
+    <movePattern>horde</movePattern>
+    <amplitude>80</amplitude>
+    <frequency>1.5</frequency>
+    <bulletPattern>spiral</bulletPattern>
+    <color>180,255,220</color>
+  </enemyType>
+  <!-- Boss: very large, fires energy beams -->
+  <enemyType>
+    <name>Boss</name>
+    <texture>pics/space/ships/Spaceship_5</texture>
+    <size>120</size>
+    <scale>1.2</scale>
+    <hp>250</hp>
+    <speed>30</speed>
+    <score>200</score>
+    <fireRate>1.2</fireRate>
+    <movePattern>horde</movePattern>
+    <amplitude>50</amplitude>
+    <frequency>0.6</frequency>
+    <bulletPattern>burst</bulletPattern>
+    <color>255,100,100</color>
+  </enemyType>
 </enemies>

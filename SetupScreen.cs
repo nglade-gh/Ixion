@@ -311,10 +311,14 @@ public class SetupScreen : GameScreen
             float dInc = rightPressed ? 0.05f : (leftPressed ? -0.05f : 0f);
             d.PlayerDamageMultiplier = Math.Clamp(d.PlayerDamageMultiplier + dInc, 0.1f, 3f);
         }
-        else if (index == 5)
+        else if (index == 6)
         {
             d.StructureHp = Math.Clamp(d.StructureHp + inc, 10, 200);
             d.ShieldStartEnergy = d.StructureHp;
+        }
+        else if (index == 7)
+        {
+            d.LaserHeatRateModifier = Math.Clamp(d.LaserHeatRateModifier + inc, -100, 100);
         }
         AppConfig.Save();
     }
@@ -372,6 +376,7 @@ public class SetupScreen : GameScreen
                 "Vitesse Ennemis : " + d.EnemySpeedModifier.ToString("+0;-0") + "%",
                 "Degats Joueur : " + d.PlayerDamageMultiplier.ToString("F1") + "x",
                 "Structure : " + d.StructureHp + " PV",
+                "Chauffe Laser : " + d.LaserHeatRateModifier.ToString("+0;-0") + "%",
                 "Retour"
             };
         }

@@ -85,6 +85,83 @@ public class Player : Personnage
     /// </summary>
     public int StructurePoints => HP;
 
+    // -------------------------------------------------------
+    // Laser overheat system
+    // -------------------------------------------------------
+
+    /// <summary>
+    // Current laser heat level (0–100).
+    /// </summary>
+    public float LaserHeat { get; private set; }
+
+    /// <summary>
+    /// Maximum laser heat (100).
+    /// </summary>
+    public const float LaserMaxHeat = 100f;
+
+    /// <summary>
+    /// Heat added per primary fire shot (default base; scaled by difficulty modifier).
+    /// </summary>
+    public const float LaserHeatPerShotBase = 5f;
+
+    /// <summary>
+    /// Heat added per primary fire shot, adjusted by current difficulty setting.
+    /// </summary>
+    public float LaserHeatPerShot => LaserHeatPerShotBase * (1f + AppConfig.Difficulty.LaserHeatRateModifier / 100f);
+
+    /// <summary>
+    /// Base cooling rate per second (heat removed).
+    /// </summary>
+    public const float LaserCoolingRate = 20f;
+
+    /// <summary>
+    /// Multiplicateur de refroidissement (appliqué par bonus RapidCool).
+    /// </summary>
+    public float LaserCoolingMultiplier { get; set; } = 1f;
+
+    /// <summary>
+    /// Seuil de surchauffe (fraction de max).
+    /// </summary>
+    private const float OverheatThreshold = 0.75f;
+
+    /// <summary>
+    /// True si le laser est en surchauffe (fréquence divisée par 3).
+    /// </summary>
+    public bool IsOverheated => LaserHeat >= LaserMaxHeat * OverheatThreshold;
+
+    /// <summary>
+    /// Fréquence de tir effective (modifiée par surchauffe).
+    /// </summary>
+    public float EffectiveFireRate
+    {
+        get
+        {
+            if (IsOverheated)
+                return FireRate * 3f;  // slower (3x cooldown)
+            return FireRate;
+        }
+    }
+
+    /// <summary>
+    /// Applique de la chaleur au laser.
+    /// </summary>
+    /// <param name="amount">Quantité de chaleur à ajouter.</param>
+    public void ApplyLaserHeat(float amount)
+    {
+        LaserHeat = Math.Min(LaserMaxHeat, LaserHeat + amount);
+    }
+
+    /// <summary>
+    /// Refroidit le laser selon le taux actuel.
+    /// </summary>
+    /// <param name="dt">Delta time en secondes.</param>
+    public void CoolLaser(float dt)
+    {
+        if (LaserHeat <= 0f) return;
+        float cooling = LaserCoolingRate * LaserCoolingMultiplier * dt;
+        LaserHeat = Math.Max(0f, LaserHeat - cooling);
+    }
+
     /// <summary>
     /// Indique si le bouclier est actif.
     /// </summary>
@@ -140,6 +217,8 @@ public class Player : Personnage
         _shieldRegenTimer = 0f;
 
         CooldownPrimary = 0f;
+        LaserHeat = 0f;
+        LaserCoolingMultiplier = 1f;
         CooldownSecondary = 0f;
         CooldownSpecial = 0f;
         PrimaryUpgraded = false;
@@ -208,6 +287,9 @@ public class Player : Personnage
             }
         }
 
+        // Laser cooling
+        CoolLaser(dt);
+
         // Cooldowns
         if (CooldownPrimary > 0f) CooldownPrimary -= dt;
         if (CooldownSecondary > 0f) CooldownSecondary -= dt;
@@ -224,7 +306,12 @@ public class Player : Personnage
     public bool TryFirePrimary()
     {
         if (CooldownPrimary > 0f) return false;
-        CooldownPrimary = PrimaryUpgraded ? 0.033f : 0.1f; // 10/sec base, 30/sec when upgraded
+        // Apply effective fire rate (overheated = slower)
+        float baseRate = PrimaryUpgraded ? 0.033f : 0.1f;
+        float rate = IsOverheated ? baseRate * 3f : baseRate;
+        CooldownPrimary = rate;
+        // Apply heat from firing
+        ApplyLaserHeat(LaserHeatPerShot);
         return true;
     }
 

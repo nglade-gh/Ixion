@@ -19,6 +19,74 @@
     <Item type="SourceFile" source="pics/lasers/player_laser.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/player_laser.png" />
     <Item type="SourceFile" source="pics/lasers/enemy_laser.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/enemy_laser.png" />
     <Item type="SourceFile" source="pics/lasers/turret_laser.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/turret_laser.png" />
+
+    <!-- Laser sprites for Swarm/Spread/Spiral bullets -->
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/01.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/01" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/02.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/02" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/03.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/03" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/04.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/04" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/05.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/05" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/06.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/06" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/07.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/07" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/08.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/08" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/09.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/09" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/10.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/10" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/11.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/11" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/12.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/12" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/13.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/13" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/14.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/14" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/15.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/15" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/16.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/16" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/17.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/17" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/18.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/18" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/19.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/19" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/20.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/20" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/21.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/21" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/22.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/22" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/23.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/23" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/24.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/24" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/25.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/25" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/26.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/26" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/27.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/27" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/28.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/28" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/29.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/29" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/30.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/30" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/31.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/31" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/32.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/32" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/33.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/33" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/34.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/34" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/35.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/35" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/36.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/36" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/37.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/37" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/38.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/38" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/39.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/39" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/40.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/40" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/41.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/41" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/42.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/42" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/43.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/43" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/44.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/44" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/45.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/45" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/46.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/46" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/47.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/47" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/48.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/48" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/49.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/49" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/50.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/50" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/51.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/51" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/52.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/52" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/53.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/53" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/54.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/54" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/55.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/55" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/56.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/56" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/57.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/57" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/58.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/58" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/59.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/59" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/60.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/60" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/61.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/61" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/62.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/62" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/63.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/63" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/64.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/64" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/65.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/65" />
+    <Item type="SourceFile" source="pics/lasers/laser_sprites/66.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/lasers/laser_sprites/66" />
     <Item type="SourceFile" source="pics/ships/ship1.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/ships/ship1.png" />
     <Item type="SourceFile" source="pics/ships/ship2.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/ships/ship2.png" />
     <Item type="SourceFile" source="pics/explosions/Explosion_Vaisseau_Petit/1.png" processor="TextureProcessor" processorParam="ColorKeyColor|255,0,255,0" build="Content/pics/explosions/Explosion_Vaisseau_Petit/1.png" />

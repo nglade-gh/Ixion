@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -102,6 +103,23 @@ public class GameplayScreen : GameScreen
     /// Timer pour la gestion du menu pause.
     /// </summary>
     private float _pauseTimer;
+    private GameTime _gameTime;
+
+    // -------------------------------------------------------
+    // Timed bonus timers
+    // -------------------------------------------------------
+
+    private float _rapidCoolTimer;
+    private bool _rapidCoolActive;
+
+    private float _diagonalShotTimer;
+    private bool _diagonalShotActive;
+
+    private float _powerShotTimer;
+    private bool _powerShotActive;
+
+    private float _tripleShotTimer;
+    private bool _tripleShotActive;
 
     /// <summary>
     /// Index sélectionné dans le menu pause.
@@ -175,7 +193,10 @@ public class GameplayScreen : GameScreen
                 LoadTextureOnce(_bulletTextures, bullet.Texture);
             Console.WriteLine($"  [GameplayScreen.LoadContent] Enemies: {_enemyTextures.Count} Bullets: {_bulletTextures.Count}");
 
-            // Bonus texture fallback
+            // Preload all bonus textures
+            foreach (var bonusType in cfg.Bonuses.Bonuses)
+                LoadTextureOnce(_bulletTextures, bonusType.Texture);
+            // Fallback bonus texture (used if a bonus texture is not found)
             if (cfg.Bonuses.Bonuses.Count > 0)
             {
                 string btex = cfg.Bonuses.Bonuses[0].Texture;
@@ -285,6 +306,7 @@ public class GameplayScreen : GameScreen
     /// <param name="gameTime">Temps écoulé depuis la dernière frame.</param>
     public override void Update(GameTime gameTime)
     {
+        _gameTime = gameTime;
         float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
         // Toggle pause on PauseGame action
@@ -343,9 +365,58 @@ public class GameplayScreen : GameScreen
             Vector2 pos = new Vector2(
                 _player.Position.X,
                 _player.Position.Y - _player.Size.Y * _player.Scale / 2f);
-            _playerBullets.Add(new Bullet(bp, _bulletTextures[GameConfig.ContentKey(bp.Texture)],
-                pos, new Vector2(0f, -bp.Speed), null));
-            if (_audio != null) _audio.PlaySfx("sounds/laser_fire");
+
+            if (_tripleShotActive)
+            {
+                // Triple spread shot: center + left diagonal + right diagonal
+                foreach (float angle in new[] { -0.3f, 0f, 0.3f })
+                {
+                    Vector2 dir = new Vector2((float)Math.Sin(angle), -(float)Math.Cos(angle));
+                    BulletParams bpClone = new BulletParams
+                    {
+                        Name = bp.Name,
+                        Texture = bp.Texture,
+                        Width = bp.Width,
+                        Height = bp.Height,
+                        Speed = bp.Speed,
+                        Damage = bp.Damage,
+                        Kind = bp.Kind,
+                        Homing = bp.Homing,
+                        SearchRadius = bp.SearchRadius,
+                        ColorRaw = string.IsNullOrEmpty(bp.ColorRaw) ? "255,255,100,255" : bp.ColorRaw,
+                        Rotation = bp.Rotation,
+                        SourceRectRaw = bp.SourceRectRaw
+                    };
+                    Vector2 spawnPos = new Vector2(
+                        _player.Position.X + dir.X * 10f,
+                        _player.Position.Y - _player.Size.Y * _player.Scale / 2f);
+                    _playerBullets.Add(new Bullet(bpClone, _bulletTextures[GameConfig.ContentKey(bp.Texture)],
+                        spawnPos, dir * bp.Speed, null));
+                }
+            }
+            else if (_diagonalShotActive)
+            {
+                // Add diagonal shots in addition to straight shot
+                _playerBullets.Add(new Bullet(bp, _bulletTextures[GameConfig.ContentKey(bp.Texture)],
+                    pos, new Vector2(0f, -bp.Speed), null));
+                if (_audio != null) _audio.PlaySfx("sounds/laser_fire");
+
+                // Left diagonal
+                Vector2 diagLeft = new Vector2(-0.5f, -0.866f);
+                _playerBullets.Add(new Bullet(bp, _bulletTextures[GameConfig.ContentKey(bp.Texture)],
+                    new Vector2(pos.X - 5f, pos.Y), diagLeft * bp.Speed, null));
+                // Right diagonal
+                Vector2 diagRight = new Vector2(0.5f, -0.866f);
+                _playerBullets.Add(new Bullet(bp, _bulletTextures[GameConfig.ContentKey(bp.Texture)],
+                    new Vector2(pos.X + 5f, pos.Y), diagRight * bp.Speed, null));
+                if (_audio != null) _audio.PlaySfx("sounds/laser_fire");
+            }
+            else
+            {
+                _playerBullets.Add(new Bullet(bp, _bulletTextures[GameConfig.ContentKey(bp.Texture)],
+                    pos, new Vector2(0f, -bp.Speed), null));
+                if (_audio != null) _audio.PlaySfx("sounds/laser_fire");
+            }
         }
 
         if (InputService.Instance.IsActionHeld("FireSecondary") && _player.TryFireSecondary())
@@ -372,6 +443,26 @@ public class GameplayScreen : GameScreen
             Vector2 pos = new Vector2(
                 _player.Position.X,
                 _player.Position.Y - _player.Size.Y * _player.Scale / 2f);
+
+            if (_powerShotActive)
+            {
+                // Power shot: massive damage, wider bullet
+                bp = new BulletParams
+                {
+                    Name = "PowerShot",
+                    Texture = bp.Texture,
+                    Width = bp.Width * 2,
+                    Height = bp.Height * 2,
+                    Speed = bp.Speed,
+                    Damage = bp.Damage * 4,
+                    Kind = bp.Kind,
+                    Homing = bp.Homing,
+                    SearchRadius = bp.SearchRadius,
+                    ColorRaw = "255,100,0,255",
+                    Rotation = bp.Rotation,
+                    SourceRectRaw = bp.SourceRectRaw
+                };
+            }
             _playerBullets.Add(new Bullet(bp, _bulletTextures[GameConfig.ContentKey(bp.Texture)],
                 pos, new Vector2(0f, -bp.Speed), null));
         }
@@ -426,6 +517,35 @@ public class GameplayScreen : GameScreen
         {
             _enemySpawnTimer = 0f;
             SpawnEnemy();
+        }
+
+        // Countdown timed bonuses
+        if (_rapidCoolActive)
+        {
+            _rapidCoolTimer -= dt;
+            if (_rapidCoolTimer <= 0f)
+            {
+                _rapidCoolActive = false;
+                _player.LaserCoolingMultiplier = 1f;
+            }
+        }
+        if (_diagonalShotActive)
+        {
+            _diagonalShotTimer -= dt;
+            if (_diagonalShotTimer <= 0f)
+                _diagonalShotActive = false;
+        }
+        if (_powerShotActive)
+        {
+            _powerShotTimer -= dt;
+            if (_powerShotTimer <= 0f)
+                _powerShotActive = false;
+        }
+        if (_tripleShotActive)
+        {
+            _tripleShotTimer -= dt;
+            if (_tripleShotTimer <= 0f)
+                _tripleShotActive = false;
         }
 
         HandleCollisions();
@@ -494,17 +614,55 @@ public class GameplayScreen : GameScreen
     /// Fait apparaître un bonus à la position donnée (8% de chance).
     /// </summary>
     /// <param name="position">Position de spawn du bonus.</param>
-    private void SpawnBonus(Vector2 position)
+    /// <param name="enemySize">Taille de l'ennemi détruit (influence la probabilité de drop).</param>
+    private void SpawnBonus(Vector2 position, float enemySize = 46f)
     {
         if (GameConfig.Instance.Bonuses.Bonuses.Count == 0) return;
-        if (_random.NextDouble() > 0.08f) return;
 
-        var bonusParams = GameConfig.Instance.Bonuses.Bonuses[_random.Next(GameConfig.Instance.Bonuses.Bonuses.Count)];
+        // Drop chance proportional to enemy size:
+        //   size 46 (normal) → ~8%
+        //   size 92 (large)  → ~20%
+        //   size 16 (tiny)   → ~2%
+        float sizeBonus = (enemySize / 46f - 0.5f) * 0.12f;
+        float baseChance = 0.08f;
+        float bonusChance = MathHelper.Clamp(baseChance + sizeBonus, 0.02f, 0.35f);
+
+        if (_random.NextDouble() > bonusChance) return;
+
+        // Weighted pool: timed bonuses more likely, avoid over-upgrades
+        var timedBonuses = new[] { "RapidCool", "DiagonalShot", "PowerShot", "TripleShot", "ShieldBoost" };
+        var repairBonuses = new[] { "ShieldRepair", "StructureRepair", "MegaMissile" };
+        var upgradeBonuses = new[] { "PrimaryUpgrade", "SecondaryUpgrade" };
+
+        var weighted = new List<(BonusParams p, float weight)>();
+        foreach (var bp in GameConfig.Instance.Bonuses.Bonuses)
+        {
+            float w = 1f;
+            if (timedBonuses.Contains(bp.Name)) w = 2.5f;
+            else if (repairBonuses.Contains(bp.Name)) w = 2f;
+            else if (upgradeBonuses.Contains(bp.Name)) w = 0.6f;
+            weighted.Add((bp, w));
+        }
+
+        float totalWeight = weighted.Sum(w => w.weight);
+        float pick = (float)_random.NextDouble() * totalWeight;
+        float cumulative = 0f;
+        BonusParams chosen = weighted[0].p;
+        foreach (var item in weighted)
+        {
+            cumulative += item.weight;
+            if (pick <= cumulative)
+            {
+                chosen = item.p;
+                break;
+            }
+        }
+
         Texture2D tex = _bonusTexture;
-        if (!string.IsNullOrEmpty(bonusParams.Texture) && _bulletTextures.ContainsKey(GameConfig.ContentKey(bonusParams.Texture)))
-            tex = _bulletTextures[GameConfig.ContentKey(bonusParams.Texture)];
+        if (!string.IsNullOrEmpty(chosen.Texture) && _bulletTextures.ContainsKey(GameConfig.ContentKey(chosen.Texture)))
+            tex = _bulletTextures[GameConfig.ContentKey(chosen.Texture)];
 
-        var bonus = new Bonus(bonusParams, tex, position);
+        var bonus = new Bonus(chosen, tex, position);
         _bonuses.Add(bonus);
     }
 
@@ -522,6 +680,9 @@ public class GameplayScreen : GameScreen
         Vector2 muzzle = new Vector2(
             enemy.Position.X,
             enemy.Position.Y + enemy.Size.Y * enemy.Scale / 2f);
+
+        // Phase croissante pour les tirs en spirale (sinusoïdale dans le temps)
+        float spiralPhase = (float)_gameTime.TotalGameTime.TotalSeconds * 3f;
 
         switch (enemy.BulletPattern)
         {
@@ -548,6 +709,34 @@ public class GameplayScreen : GameScreen
                 Vector2 toPlayer = _player.Position - muzzle;
                 SpawnEnemyBullet(cfg.GetBullet("EnemyHoming"), muzzle, Vector2.Normalize(toPlayer), _player);
                 if (_audio != null) _audio.PlaySfx("sounds/missile_launch");
+                break;
+            case BulletPattern.Swarm:
+                // 2-3 petits tirs rapides en diagonale + 1 droit
+                int swarmCount = _random.Next(2) + 2;
+                for (int i = 0; i < swarmCount; i++)
+                {
+                    float angle = (i - swarmCount / 2f) * 0.2f;
+                    Vector2 dir = new Vector2((float)Math.Sin(angle), (float)Math.Cos(angle));
+                    string bulletName = i == 0 ? "SwarmBullet" : (_random.Next(2) == 0 ? "SwarmDiagLeft" : "SwarmDiagRight");
+                    SpawnEnemyBullet(cfg.GetBullet(bulletName), muzzle, dir);
+                }
+                break;
+            case BulletPattern.Spread:
+                // 3 tirs en éventail (gauche, centre, droite)
+                foreach (float angle in new[] { -0.4f, 0f, 0.4f })
+                {
+                    Vector2 dir = new Vector2((float)Math.Sin(angle), (float)Math.Cos(angle));
+                    SpawnEnemyBullet(cfg.GetBullet("TripleSpread"), muzzle, dir);
+                }
+                break;
+            case BulletPattern.Spiral:
+                // 1 tir qui tourne progressivement (3 angles)
+                for (int i = 0; i < 3; i++)
+                {
+                    float angle = spiralPhase + i * MathHelper.TwoPi / 3f;
+                    Vector2 dir = new Vector2((float)Math.Sin(angle), (float)Math.Cos(angle));
+                    SpawnEnemyBullet(cfg.GetBullet("SpiralBullet"), muzzle, dir);
+                }
                 break;
         }
     }
@@ -590,7 +779,7 @@ public class GameplayScreen : GameScreen
                     {
                         _player.Score += enemy.ScoreValue;
                         SpawnExplosion(enemy.Position, "Explosion_Vaisseau_Petit", 1f);
-                        SpawnBonus(enemy.Position);
+                        SpawnBonus(enemy.Position, enemy.Size.X);
                         if (_audio != null) _audio.PlaySfx("sounds/explosion");
                     }
                     else
@@ -714,6 +903,43 @@ public class GameplayScreen : GameScreen
         {
             _player.RepairStructure(p.Amount);
         }
+        else if (string.Equals(p.Name, "RapidCool", StringComparison.OrdinalIgnoreCase))
+        {
+            // Triple cooling rate for K seconds
+            float duration = p.Amount > 0 ? p.Amount : 20f;
+            _player.LaserCoolingMultiplier = 3f;
+            _rapidCoolTimer = duration;
+            _rapidCoolActive = true;
+        }
+        else if (string.Equals(p.Name, "DiagonalShot", StringComparison.OrdinalIgnoreCase))
+        {
+            // Fire diagonally too for K seconds
+            float duration = p.Amount > 0 ? p.Amount : 15f;
+            _diagonalShotActive = true;
+            _diagonalShotTimer = duration;
+        }
+        else if (string.Equals(p.Name, "PowerShot", StringComparison.OrdinalIgnoreCase))
+        {
+            // Secondary becomes a powerful beam for K seconds
+            float duration = p.Amount > 0 ? p.Amount : 20f;
+            _powerShotActive = true;
+            _powerShotTimer = duration;
+        }
+        else if (string.Equals(p.Name, "TripleShot", StringComparison.OrdinalIgnoreCase))
+        {
+            // Primary fires 3 bullets spread for K seconds
+            float duration = p.Amount > 0 ? p.Amount : 15f;
+            _tripleShotActive = true;
+            _tripleShotTimer = duration;
+        }
+        else if (string.Equals(p.Name, "MegaMissile", StringComparison.OrdinalIgnoreCase))
+        {
+            _player.AddSpecialAmmo(p.Amount > 0 ? p.Amount : 10);
+        }
+        else if (string.Equals(p.Name, "ShieldBoost", StringComparison.OrdinalIgnoreCase))
+        {
+            _player.RepairShield(p.Amount > 0 ? p.Amount : 25);
+        }
     }
 
     /// <summary>
@@ -827,6 +1053,20 @@ public class GameplayScreen : GameScreen
                 spriteBatch.Draw(_particleTexture, structBarRect, new Color(220, 50, 50));
         }
 
+        // Temperature bar (green) - below structure
+        float tempRatio = _player.LaserHeat / Player.LaserMaxHeat;
+        int tempY = 50;
+        string tempLabel = _player.IsOverheated ? "Chaud!" : "Temp.";
+        Color tempColor = _player.IsOverheated ? Color.OrangeRed : Color.Green;
+        var tempBarRect = new Rectangle(
+            (int)ScreenManager._Instance._Dimensions.X - (int)barWidth - 10, tempY,
+            (int)(barWidth * Math.Clamp(tempRatio, 0f, 1f)), (int)barHeight);
+        spriteBatch.DrawString(_font, tempLabel,
+            new Vector2((int)(ScreenManager._Instance._Dimensions.X - barWidth - 10 - 42), tempY),
+            tempColor);
+        if (tempBarRect.Width > 0)
+            spriteBatch.Draw(_particleTexture, tempBarRect, tempColor);
+
         // Special ammo
         if (_player.SpecialAmmo > 0)
         {
@@ -850,6 +1090,24 @@ public class GameplayScreen : GameScreen
         {
             spriteBatch.DrawString(_font, "Upgrade Sec: " + Math.Max(0, (int)_player.SecondaryUpgradeTimer) + "s",
                 new Vector2(10, hudY), Color.Magenta);
+            hudY += 20;
+        }
+        if (_rapidCoolActive)
+        {
+            spriteBatch.DrawString(_font, "Refroid: " + Math.Max(0, (int)_rapidCoolTimer) + "s",
+                new Vector2(10, hudY), Color.Blue);
+            hudY += 20;
+        }
+        if (_powerShotActive)
+        {
+            spriteBatch.DrawString(_font, "Tir Puissant: " + Math.Max(0, (int)_powerShotTimer) + "s",
+                new Vector2(10, hudY), Color.Orange);
+            hudY += 20;
+        }
+        if (_tripleShotActive)
+        {
+            spriteBatch.DrawString(_font, "Triple Tir: " + Math.Max(0, (int)_tripleShotTimer) + "s",
+                new Vector2(10, hudY), Color.Yellow);
             hudY += 20;
         }
     }

@@ -115,4 +115,94 @@
     <rotation>90</rotation>
     <hitPoints>1</hitPoints>
   </bullet>
+  <!-- Swarm diagonal bullets (fast, small) -->
+  <bullet>
+    <name>SwarmBullet</name>
+    <texture>pics/lasers/laser_sprites/01</texture>
+    <width>10</width>
+    <height>18</height>
+    <speed>280</speed>
+    <damage>4</damage>
+    <kind>straight</kind>
+    <homing>0</homing>
+    <searchRadius>0</searchRadius>
+    <color>255,255,100,255</color>
+    <rotation>270</rotation>
+    <hitPoints>1</hitPoints>
+  </bullet>
+  <!-- Diagonal swarm left -->
+  <bullet>
+    <name>SwarmDiagLeft</name>
+    <texture>pics/lasers/laser_sprites/02</texture>
+    <width>10</width>
+    <height>18</height>
+    <speed>260</speed>
+    <damage>4</damage>
+    <kind>straight</kind>
+    <homing>0</homing>
+    <searchRadius>0</searchRadius>
+    <color>255,200,80,255</color>
+    <rotation>300</rotation>
+    <hitPoints>1</hitPoints>
+  </bullet>
+  <!-- Diagonal swarm right -->
+  <bullet>
+    <name>SwarmDiagRight</name>
+    <texture>pics/lasers/laser_sprites/03</texture>
+    <width>10</width>
+    <height>18</height>
+    <speed>260</speed>
+    <damage>4</damage>
+    <kind>straight</kind>
+    <homing>0</homing>
+    <searchRadius>0</searchRadius>
+    <color>255,200,80,255</color>
+    <rotation>240</rotation>
+    <hitPoints>1</hitPoints>
+  </bullet>
+  <!-- Wide energy beam (boss/big enemy) -->
+  <bullet>
+    <name>EnergyBeam</name>
+    <texture>pics/lasers/laser_sprites/05</texture>
+    <width>14</width>
+    <height>32</height>
+    <speed>180</speed>
+    <damage>18</damage>
+    <kind>straight</kind>
+    <homing>0</homing>
+    <searchRadius>0</searchRadius>
+    <color>255,50,255,255</color>
+    <rotation>90</rotation>
+    <hitPoints>1</hitPoints>
+  </bullet>
+  <!-- Spiral bullet (for rotating enemies) -->
+  <bullet>
+    <name>SpiralBullet</name>
+    <texture>pics/lasers/laser_sprites/07</texture>
+    <width>12</width>
+    <height>22</height>
+    <speed>200</speed>
+    <damage>6</damage>
+    <kind>straight</kind>
+    <homing>0</homing>
+    <searchRadius>0</searchRadius>
+    <color>200,255,255,255</color>
+    <rotation>90</rotation>
+    <hitPoints>1</hitPoints>
+  </bullet>
+  <!-- Triple spread from large enemy -->
+  <bullet>
+    <name>TripleSpread</name>
+    <texture>pics/lasers/laser_sprites/04</texture>
+    <width>12</width>
+    <height>24</height>
+    <speed>230</speed>
+    <damage>7</damage>
+    <kind>straight</kind>
+    <homing>0</homing>
+    <searchRadius>0</searchRadius>
+    <color>255,150,255,255</color>
+    <rotation>90</rotation>
+    <hitPoints>1</hitPoints>
+  </bullet>
 </bullets>

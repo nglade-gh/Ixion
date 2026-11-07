@@ -42,7 +42,7 @@ public class Enemy : Creature
         MaxHP = type.Hp;
         HP = MaxHP;
         Speed = type.Speed * (1f + wave * 0.05f);
-        FireRate = type.FireRate * 5f;
+        FireRate = 5f / type.FireRate;
         ScoreValue = type.Score;
         MovePattern = type.MovePattern;
         Amplitude = type.Amplitude;
@@ -94,6 +94,14 @@ public class Enemy : Creature
                     Vector2 desired = Vector2.Normalize(toTarget) * Speed * 2.1f;
                     Velocity = Vector2.Lerp(Velocity, desired, MathHelper.Clamp(3f * dt, 0f, 1f));
                 }
+                break;
+
+            case MovePattern.Swarm:
+                // Chaotic, jittery movement: multiple sine waves at different frequencies/scales
+                float swarmX1 = (float)(Math.Cos(MoveTimer * Frequency * 1.5f + _phase) * Amplitude);
+                float swarmX2 = (float)(Math.Sin(MoveTimer * Frequency * 2.7f + _phase * 0.7) * Amplitude * 0.5f);
+                float swarmX3 = (float)(Math.Cos(MoveTimer * Frequency * 0.8f + _phase * 1.3f) * Amplitude * 0.3f);
+                Velocity = new Vector2((swarmX1 + swarmX2 + swarmX3) * 0.8f, Speed * 1.2f);
                 break;
         }
 

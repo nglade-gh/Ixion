@@ -25,6 +25,7 @@
             <xs:enumeration value="horde"/>
             <xs:enumeration value="charge"/>
             <xs:enumeration value="zigzag"/>
+            <xs:enumeration value="swarm"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -33,6 +34,9 @@
             <xs:enumeration value="simple"/>
             <xs:enumeration value="burst"/>
             <xs:enumeration value="homing"/>
+            <xs:enumeration value="spread"/>
+            <xs:enumeration value="spiral"/>
+            <xs:enumeration value="swarm"/>
         </xs:restriction>
     </xs:simpleType>
 

@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Bonus archetypes dropped by enemies.
      name: PrimaryUpgrade | SecondaryUpgrade | SpecialAmmo | ShieldRepair | StructureRepair
-     amount: quantity repaired or granted -->
+           | RapidCool | DiagonalShot | PowerShot | TripleShot | MegaMissile | ShieldBoost
+     amount: quantity repaired/granted or duration in seconds (for timed bonuses)
+     Bonus size: 48x48 (3x original 16x16) -->
 <bonuses xmlns="https://www.timc.fr/nicolas-glade/dotnet/shooter"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="https://www.timc.fr/nicolas-glade/dotnet/shooter shooter-config.xsd">
   <bonus>
     <name>PrimaryUpgrade</name>
     <texture>pics/bullets/white-down-arrow-icon-8</texture>
-    <width>16</width>
-    <height>16</height>
+    <width>48</width>
+    <height>48</height>
     <speed>80</speed>
     <color>0,255,255,255</color>
     <amount>0</amount>
@@ -17,8 +19,8 @@
   <bonus>
     <name>SecondaryUpgrade</name>
     <texture>pics/bullets/missile1</texture>
-    <width>16</width>
-    <height>16</height>
+    <width>48</width>
+    <height>48</height>
     <speed>80</speed>
     <color>255,0,255,255</color>
     <amount>0</amount>
@@ -26,8 +28,8 @@
   <bonus>
     <name>SpecialAmmo</name>
     <texture>pics/bullets/missile1</texture>
-    <width>16</width>
-    <height>16</height>
+    <width>48</width>
+    <height>48</height>
     <speed>80</speed>
     <color>255,255,0,255</color>
     <amount>3</amount>
@@ -35,8 +37,8 @@
   <bonus>
     <name>ShieldRepair</name>
     <texture>pics/bullets/white-down-arrow-icon-8</texture>
-    <width>16</width>
-    <height>16</height>
+    <width>48</width>
+    <height>48</height>
     <speed>80</speed>
     <color>40,120,255,255</color>
     <amount>30</amount>
@@ -44,10 +46,70 @@
   <bonus>
     <name>StructureRepair</name>
     <texture>pics/bullets/missile1</texture>
-    <width>16</width>
-    <height>16</height>
+    <width>48</width>
+    <height>48</height>
     <speed>80</speed>
     <color>80,200,80,255</color>
     <amount>20</amount>
+  </bonus>
+  <!-- RapidCool: laser cooling rate tripled for K seconds (amount = duration) -->
+  <bonus>
+    <name>RapidCool</name>
+    <texture>pics/shields/Shield_Bleu/1</texture>
+    <width>48</width>
+    <height>48</height>
+    <speed>80</speed>
+    <color>0,200,255,255</color>
+    <amount>20</amount>
+  </bonus>
+  <!-- DiagonalShot: main weapon also fires diagonally for K seconds (amount = duration) -->
+  <bonus>
+    <name>DiagonalShot</name>
+    <texture>pics/lasers/laser_sprites/11</texture>
+    <width>48</width>
+    <height>48</height>
+    <speed>80</speed>
+    <color>255,100,50,255</color>
+    <amount>15</amount>
+  </bonus>
+  <!-- PowerShot: secondary weapon becomes a powerful beam for K seconds (amount = duration) -->
+  <bonus>
+    <name>PowerShot</name>
+    <texture>pics/lasers/laser_sprites/13</texture>
+    <width>48</width>
+    <height>48</height>
+    <speed>80</speed>
+    <color>255,50,50,255</color>
+    <amount>20</amount>
+  </bonus>
+  <!-- TripleShot: primary fires 3 bullets (spread) for K seconds (amount = duration) -->
+  <bonus>
+    <name>TripleShot</name>
+    <texture>pics/lasers/laser_sprites/14</texture>
+    <width>48</width>
+    <height>48</height>
+    <speed>80</speed>
+    <color>255,255,100,255</color>
+    <amount>15</amount>
+  </bonus>
+  <!-- MegaMissile: grants 10 special ammo -->
+  <bonus>
+    <name>MegaMissile</name>
+    <texture>pics/bullets/missile1</texture>
+    <width>48</width>
+    <height>48</height>
+    <speed>80</speed>
+    <color>255,150,0,255</color>
+    <amount>10</amount>
+  </bonus>
+  <!-- ShieldBoost: instant +25 shield energy -->
+  <bonus>
+    <name>ShieldBoost</name>
+    <texture>pics/shields/Shield_Bleu/2</texture>
+    <width>48</width>
+    <height>48</height>
+    <speed>80</speed>
+    <color>100,150,255,255</color>
+    <amount>25</amount>
   </bonus>
 </bonuses>
