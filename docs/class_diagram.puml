@@ -1,0 +1,318 @@
+@startuml Shooter - Diagramme de classes
+
+skinparam classAttributeFontSize 12
+skinparam classFontSize 14
+skinparam backgroundColor #f8f9fa
+skinparam classBackgroundColor #ffffff
+skinparam classBorderColor #2c3e50
+
+' === Hierarchie Sprite ===
+abstract class Sprite {
+  # Texture2D _texture
+  # Rectangle? _sourceRect
+  + Vector2 Position
+  + Vector2 Size
+  + float Scale
+  + Color Color
+  + float Rotation
+  + Vector2 Origin
+  + bool IsActive
+  + Rectangle Bounds
+  + Update(GameTime)
+  + Draw(SpriteBatch)
+  + CreateDotTexture(GraphicsDevice, int, Color)
+  + CreateTextTexture(GraphicsDevice, string, SpriteFont, Color)
+  + CreateArrowTexture(GraphicsDevice, int, Color)
+}
+
+abstract class Entite {
+  + Vector2 Velocity
+  + Vector2 Acceleration
+  + float Speed
+  + int HP
+  + int MaxHP
+  + float RegenRate
+  + float FireCooldown
+  + float FireRate
+  + TakeDamage(int) : bool
+  + TryFire() : bool
+}
+
+abstract class Creature {
+  + float MoveTimer
+  + MovePattern MovePattern
+  + float Amplitude
+  + float Frequency
+  + int ScoreValue
+  + BulletPattern BulletPattern
+}
+
+abstract class Personnage {
+  + int Score
+  + int Lives
+  + float InvincibleTimer
+  + float InvincibleDuration
+  + bool Invincible
+  + TakeHit()
+}
+
+abstract class Decors {
+  + float ScrollSpeed
+  + int Layer
+  + bool IsParallax
+}
+
+' === Classes concretes ===
+class Player {
+  + Rectangle _playArea
+  + float CooldownPrimary
+  + float CooldownSecondary
+  + float CooldownSpecial
+  + bool PrimaryUpgraded
+  + float PrimaryUpgradeTimer
+  + int PrimaryUpgradeAmmo
+  + float PrimaryUpgradeDuration
+  + bool SecondaryUpgraded
+  + float SecondaryUpgradeTimer
+  + int SecondaryUpgradeAmmo
+  + float SecondaryUpgradeDuration
+  + int SpecialAmmo
+  + TryFirePrimary() : bool
+  + TryFireSecondary() : bool
+  + TryFireSpecial() : bool
+  + ApplyPrimaryUpgrade(float, int)
+  + ApplySecondaryUpgrade(float, int)
+  + AddSpecialAmmo(int)
+  + SetPlayArea(Rectangle)
+}
+
+class Enemy {
+  + Vector2 TargetPosition
+  + Color ExplosionColor
+  + float _phase
+  - float _zigzagDir
+}
+
+class Bullet {
+  + Vector2 Velocity
+  + int Damage
+  + float HomingTurnRate
+  + Entite Target
+  + float SearchRadius
+  + float HomingDelay
+  + bool IsHomingMissile
+}
+
+class Bonus {
+  + BonusParams Params
+}
+
+class Particle {
+}
+
+class Star {
+}
+
+class DecorElement {
+  + DecorParams Params
+  + SpriteEffects Effects
+}
+
+class DecorManager {
+  + List<DecorElement> _elements
+  + List<Star> _stars
+  + Rectangle PlayArea
+  + float WallWidth
+  + Initialize(ContentManager, GraphicsDevice)
+  + Update(GameTime)
+  + DrawBack(SpriteBatch)
+  + DrawFront(SpriteBatch)
+}
+
+' === Enums ===
+enum MovePattern {
+  Sine
+  Horde
+  Charge
+  Zigzag
+}
+
+enum BulletPattern {
+  Simple
+  Burst
+  Homing
+}
+
+' === XML Config classes ===
+class GameConfig {
+  + static GameConfig Instance
+  + EntitiesConfig Entities
+  + EnemiesConfig Enemies
+  + DecorsConfig Decors
+  + BulletsConfig Bullets
+  + BonusesConfig Bonuses
+  + LoadAll()
+  + ContentKey(string) : string
+  + GetBullet(string) : BulletParams
+  + GetEnemyType(string) : EnemyType
+  + GetBonus(string) : BonusParams
+}
+
+class XmlConfig {
+  + ParseColor(string, Color) : Color
+  + ParseSourceRect(string) : Rectangle?
+  + ParseEnum<T>(string, T) : T
+}
+
+class EntityParams {
+  + string Name
+  + string Texture
+  + float Scale
+  + int MaxHp
+  + float RegenRate
+  + float FireRate
+}
+
+class PlayerParams {
+  + int Width
+  + int Height
+  + float MaxSpeed
+  + int Lives
+  + float InvincibilityDuration
+  + int InitialScore
+  + float Rotation
+}
+
+class EnemyParams {
+  + float Speed
+  + int ScoreValue
+}
+
+class EnemyType {
+  + int Size
+  + int Hp
+  + int Score
+  + string MovePatternRaw
+  + float Amplitude
+  + float Frequency
+  + string BulletPatternRaw
+  + string ColorRaw
+  + string SourceRectRaw
+  + MovePattern MovePattern
+  + BulletPattern BulletPattern
+  + Color Color
+  + Rectangle? SourceRect
+}
+
+class DecorParams {
+  + string Name
+  + string Texture
+  + List<string> Textures
+  + string Side
+  + int Layer
+  + float ScrollSpeed
+  + bool IsParallax
+  + int Tile
+  + int Count
+  + float Scale
+  + float MinScale
+  + float MaxScale
+  + string ColorRaw
+  + Color Color
+}
+
+class StarsParams {
+  + int Count
+  + float MinSpeed
+  + float MaxSpeed
+  + float MinSize
+  + float MaxSize
+}
+
+class BulletParams {
+  + string Name
+  + string Texture
+  + string SourceRectRaw
+  + int Width
+  + int Height
+  + float Speed
+  + int Damage
+  + string Kind
+  + float Homing
+  + string ColorRaw
+  + float Rotation
+  + float SearchRadius
+  + Color Color
+  + Rectangle? SourceRect
+  + bool IsHoming
+}
+
+class BonusParams {
+  + string Name
+  + string Texture
+  + int Width
+  + int Height
+  + float Speed
+  + string ColorRaw
+  + Color Color
+}
+
+class EntitiesConfig {
+  + PlayerParams Player
+  + EnemyParams Enemy
+}
+
+class EnemiesConfig {
+  + List<EnemyType> EnemyTypes
+}
+
+class DecorsConfig {
+  + List<DecorParams> Elements
+  + StarsParams Stars
+}
+
+class BulletsConfig {
+  + List<BulletParams> Bullets
+}
+
+class BonusesConfig {
+  + List<BonusParams> Bonuses
+}
+
+' === Relations d'heritage ===
+Sprite <|-- Entite
+Sprite <|-- Decors
+Sprite <|-- Bullet
+Sprite <|-- Bonus
+Sprite <|-- Particle
+Sprite <|-- Star
+Entite <|-- Creature
+Entite <|-- Personnage
+Creature <|-- Enemy
+Personnage <|-- Player
+Decors <|-- DecorElement
+EntityParams <|-- PlayerParams
+EntityParams <|-- EnemyParams
+EnemyParams <|-- EnemyType
+
+' === Relations de composition/association ===
+DecorManager "1" o-- "*" DecorElement : _elements
+DecorManager "1" o-- "*" Star : _stars
+GameplayScreen "1" *-- "1" Player : _player
+GameplayScreen "1" *-- "1" DecorManager : _decor
+GameplayScreen "1" *-- "*" Enemy : _enemies
+GameplayScreen "1" *-- "*" Bullet : _playerBullets
+GameplayScreen "1" *-- "*" Bullet : _enemyBullets
+GameplayScreen "1" *-- "*" Bonus : _bonuses
+GameplayScreen "1" *-- "*" Particle : _particles
+GameConfig "1" *-- "1" EntitiesConfig
+GameConfig "1" *-- "1" EnemiesConfig
+GameConfig "1" *-- "1" DecorsConfig
+GameConfig "1" *-- "1" BulletsConfig
+GameConfig "1" *-- "1" BonusesConfig
+EnemiesConfig "1" *-- "*" EnemyType
+DecorsConfig "1" *-- "*" DecorParams
+BulletsConfig "1" *-- "*" BulletParams
+BonusesConfig "1" *-- "*" BonusParams
+
+@enduml

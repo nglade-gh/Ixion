@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bonus archetypes dropped by enemies.
+     name: PrimaryUpgrade | SecondaryUpgrade | SpecialAmmo | ShieldRepair | StructureRepair
+     amount: quantity repaired or granted -->
+<bonuses xmlns="https://www.timc.fr/nicolas-glade/dotnet/shooter"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://www.timc.fr/nicolas-glade/dotnet/shooter shooter-config.xsd">
+  <bonus>
+    <name>PrimaryUpgrade</name>
+    <texture>pics/bullets/white-down-arrow-icon-8</texture>
+    <width>16</width>
+    <height>16</height>
+    <speed>80</speed>
+    <color>0,255,255,255</color>
+    <amount>0</amount>
+  </bonus>
+  <bonus>
+    <name>SecondaryUpgrade</name>
+    <texture>pics/bullets/missile1</texture>
+    <width>16</width>
+    <height>16</height>
+    <speed>80</speed>
+    <color>255,0,255,255</color>
+    <amount>0</amount>
+  </bonus>
+  <bonus>
+    <name>SpecialAmmo</name>
+    <texture>pics/bullets/missile1</texture>
+    <width>16</width>
+    <height>16</height>
+    <speed>80</speed>
+    <color>255,255,0,255</color>
+    <amount>3</amount>
+  </bonus>
+  <bonus>
+    <name>ShieldRepair</name>
+    <texture>pics/bullets/white-down-arrow-icon-8</texture>
+    <width>16</width>
+    <height>16</height>
+    <speed>80</speed>
+    <color>40,120,255,255</color>
+    <amount>30</amount>
+  </bonus>
+  <bonus>
+    <name>StructureRepair</name>
+    <texture>pics/bullets/missile1</texture>
+    <width>16</width>
+    <height>16</height>
+    <speed>80</speed>
+    <color>80,200,80,255</color>
+    <amount>20</amount>
+  </bonus>
+</bonuses>

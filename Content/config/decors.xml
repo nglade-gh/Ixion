@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Xenon 2 style canyon decor.
+     layer: 0 = back (slowest parallax), 1 = mid, 2 = front (side walls, drawn over entities)
+     side: left | right | top | field
+     tile: 0 = solid tiled strip (walls), 1 = scattered instances, 2 = fixed cap
+     isParallax: 1 = scrolls down continuously, 0 = fixed -->
+<decors xmlns="https://www.timc.fr/nicolas-glade/dotnet/shooter"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://www.timc.fr/nicolas-glade/dotnet/shooter shooter-config.xsd">
+  <decorElement>
+    <name>LeftWall</name>
+    <texture>pics/decors/Left</texture>
+    <side>left</side>
+    <layer>2</layer>
+    <scrollSpeed>130</scrollSpeed>
+    <isParallax>1</isParallax>
+    <tile>0</tile>
+    <scale>0.28</scale>
+  </decorElement>
+  <decorElement>
+    <name>RightWall</name>
+    <texture>pics/decors/Right</texture>
+    <side>right</side>
+    <layer>2</layer>
+    <scrollSpeed>130</scrollSpeed>
+    <isParallax>1</isParallax>
+    <tile>0</tile>
+    <scale>0.28</scale>
+  </decorElement>
+  <decorElement>
+    <name>TopCap</name>
+    <texture>pics/decors/Top</texture>
+    <side>top</side>
+    <layer>2</layer>
+    <scrollSpeed>0</scrollSpeed>
+    <isParallax>0</isParallax>
+    <tile>2</tile>
+    <scale>0.5</scale>
+  </decorElement>
+  <decorElement>
+    <name>Asteroids</name>
+    <side>field</side>
+    <layer>1</layer>
+    <scrollSpeed>55</scrollSpeed>
+    <isParallax>1</isParallax>
+    <tile>1</tile>
+    <count>8</count>
+    <minScale>0.30</minScale>
+    <maxScale>0.60</maxScale>
+    <textures>
+      <texture>pics/decors/Asteroid_1</texture>
+      <texture>pics/decors/Asteroid_2</texture>
+      <texture>pics/decors/Asteroid_3</texture>
+      <texture>pics/decors/Asteroid_4</texture>
+      <texture>pics/decors/Asteroid_5</texture>
+      <texture>pics/space/asteroids/Asteroid_1</texture>
+      <texture>pics/space/asteroids/Asteroid_2</texture>
+      <texture>pics/space/asteroids/Asteroid_3</texture>
+      <texture>pics/space/asteroids/Asteroid_4</texture>
+      <texture>pics/space/asteroids/Asteroid_5</texture>
+    </textures>
+  </decorElement>
+  <decorElement>
+    <name>MidGlow</name>
+    <texture>pics/decors/Middle</texture>
+    <side>field</side>
+    <layer>0</layer>
+    <scrollSpeed>22</scrollSpeed>
+    <isParallax>1</isParallax>
+    <tile>1</tile>
+    <count>4</count>
+    <minScale>1.0</minScale>
+    <maxScale>1.4</maxScale>
+    <color>90,70,140,200</color>
+  </decorElement>
+  <stars>
+    <count>90</count>
+    <minSpeed>20</minSpeed>
+    <maxSpeed>120</maxSpeed>
+    <minSize>1</minSize>
+    <maxSize>3</maxSize>
+  </stars>
+</decors>

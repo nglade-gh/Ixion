@@ -1,0 +1,171 @@
+@startuml Shooter - Diagramme de séquence
+
+skinparam backgroundColor #f8f9fa
+skinparam sequenceArrowFontSize 12
+skinparam sequenceParticipantFontSize 14
+
+title Séquence principale - Lancement d'une partie
+
+actor Joueur
+participant Program
+participant GameManager
+participant ScreenManager
+participant MenuScreen
+participant GameplayScreen
+participant GameConfig
+participant XmlSerializer
+participant DecorManager
+participant Player
+participant Enemy
+participant Bullet
+participant Bonus
+participant Particle
+
+Joueur -> Program : Lance le jeu
+activate Program
+Program -> GameManager : new GameManager()
+activate GameManager
+GameManager -> ScreenManager : _Instance = new ScreenManager(this)
+activate ScreenManager
+GameManager -> ScreenManager : ChangeScreen(new MenuScreen())
+ScreenManager -> MenuScreen : LoadContent()
+activate MenuScreen
+MenuScreen --> ScreenManager : prêt
+ScreenManager --> GameManager : prêt
+GameManager --> Program : prêt
+deactivate GameManager
+
+Joueur -> MenuScreen : Appuie sur Entrée (Start Game)
+MenuScreen -> ScreenManager : ChangeScreen(new GameplayScreen())
+deactivate MenuScreen
+ScreenManager -> GameplayScreen : LoadContent()
+activate GameplayScreen
+
+GameplayScreen -> GameConfig : Instance.LoadAll()
+GameConfig -> XmlSerializer : Deserialize entities.xml
+GameConfig -> XmlSerializer : Deserialize enemies.xml
+GameConfig -> XmlSerializer : Deserialize decors.xml
+GameConfig -> XmlSerializer : Deserialize bullets.xml
+GameConfig -> XmlSerializer : Deserialize bonuses.xml
+XmlSerializer --> GameConfig : configs chargées
+GameConfig --> GameplayScreen : prêt
+
+GameplayScreen -> GameplayScreen : Chargement textures\n(player, ennemis, bullets)
+GameplayScreen -> DecorManager : new DecorManager(config, screen, random)
+GameplayScreen -> DecorManager : Initialize(content, device)
+DecorManager --> GameplayScreen : décor prêt
+
+GameplayScreen -> Player : new Player(params, texture, spawn)
+activate Player
+Player --> GameplayScreen : joueur créé
+
+loop Boucle de jeu (Update)
+  Joueur -> GameplayScreen : Entrées clavier
+  
+  par Déplacement joueur
+    Joueur -> Player : Flèches/WASD
+    Player -> Player : Update(input, dt)
+    Player --> GameplayScreen : position mise à jour
+  end
+  
+  par Tir primaire
+    Joueur -> GameplayScreen : Space
+    GameplayScreen -> Player : TryFirePrimary()
+    Player --> GameplayScreen : true/false
+    alt Tir autorisé
+      GameplayScreen -> Bullet : new Bullet(params, texture, pos, vel)
+      activate Bullet
+      Bullet --> GameplayScreen : projectile créé
+    end
+  end
+  
+  par Tir secondaire
+    Joueur -> GameplayScreen : X
+    GameplayScreen -> Player : TryFireSecondary()
+    Player --> GameplayScreen : true/false
+    alt Tir autorisé
+      GameplayScreen -> Bullet : new Bullet(params, texture, pos, vel)
+      Bullet --> GameplayScreen : projectile créé
+    end
+  end
+  
+  par Tir spécial
+    Joueur -> GameplayScreen : C
+    GameplayScreen -> Player : TryFireSpecial()
+    Player --> GameplayScreen : true/false
+    alt Munitions > 0
+      GameplayScreen -> Bullet : new Bullet(params, texture, pos, vel)
+      Bullet --> GameplayScreen : projectile créé
+    end
+  end
+  
+  par Apparition ennemis
+    GameplayScreen -> GameplayScreen : SpawnEnemy()
+    GameplayScreen -> Enemy : new Enemy(type, texture, pos, ...)
+    activate Enemy
+    Enemy --> GameplayScreen : ennemi créé
+  end
+  
+  par Attaques ennemies
+    GameplayScreen -> Enemy : TryFire()
+    Enemy --> GameplayScreen : true
+    GameplayScreen -> Enemy : BulletPattern
+    alt Simple
+      GameplayScreen -> Bullet : SpawnEnemyBullet(down)
+    else Burst
+      GameplayScreen -> Bullet : SpawnEnemyBullet(fan)
+    else Homing
+      GameplayScreen -> Bullet : SpawnEnemyBullet(toward player)
+      Bullet -> Bullet : Update(homing logic)
+    end
+    Bullet --> GameplayScreen : projectile créé
+  end
+  
+  par Drop bonus
+    Enemy -> Enemy : TakeDamage() -> HP <= 0
+    Enemy --> GameplayScreen : mort (+ score)
+    GameplayScreen -> GameplayScreen : SpawnBonus(position)
+    GameplayScreen -> Bonus : new Bonus(params, texture, pos)
+    activate Bonus
+    Bonus --> GameplayScreen : bonus créé
+  end
+  
+  Joueur -> GameplayScreen : Collision avec bonus
+  GameplayScreen -> Bonus : Bounds.Intersects(playerBox)
+  Bonus --> GameplayScreen : true
+  GameplayScreen -> Player : ApplyPrimaryUpgrade() / ApplySecondaryUpgrade() / AddSpecialAmmo()
+  Player --> GameplayScreen : upgrade appliqué
+  deactivate Bonus
+  
+  par Collisions projectiles
+    GameplayScreen -> GameplayScreen : HandleCollisions()
+    GameplayScreen -> Bullet : Bounds.Intersects(enemy.Bounds)
+    Bullet --> GameplayScreen : hit
+    GameplayScreen -> Enemy : TakeDamage(damage)
+    Enemy --> GameplayScreen : mort -> SpawnExplosion + SpawnBonus
+    GameplayScreen -> Particle : new Particle(...)
+    Particle --> GameplayScreen : particule créée
+  end
+  
+  par Destruction missile homing
+    GameplayScreen -> Bullet : IsHomingMissile = true
+    GameplayScreen -> Bullet : playerBullet hits missile
+    Bullet --> GameplayScreen : détruit (+5 pts)
+  end
+  
+  GameplayScreen -> DecorManager : Update(dt)
+  DecorManager --> GameplayScreen : décor mis à jour
+end
+
+GameplayScreen -> GameplayScreen : Draw(decorBack, entities, decorFront, HUD)
+GameplayScreen --> ScreenManager : rendu
+ScreenManager --> Program : rendu
+deactivate GameplayScreen
+
+Joueur -> GameplayScreen : Player HP <= 0
+GameplayScreen -> GameplayScreen : _gameOver = true
+Joueur -> GameplayScreen : Appuie sur Entrée
+GameplayScreen -> ScreenManager : ChangeScreen(new MenuScreen())
+deactivate Player
+
+@enduml

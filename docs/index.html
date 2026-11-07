@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Shooter - Documentation complète</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; background: #f5f6fa; color: #2d3436; }
+    header { background: #2d3436; color: white; padding: 20px 40px; }
+    header h1 { margin: 0; font-size: 1.8em; }
+    header p { margin: 5px 0 0; opacity: 0.8; }
+    nav { background: #dfe6e9; padding: 10px 40px; position: sticky; top: 0; }
+    nav a { margin-right: 20px; text-decoration: none; color: #2d3436; font-weight: 500; }
+    nav a:hover { color: #0984e3; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 30px 40px; }
+    h2 { color: #2d3436; border-bottom: 2px solid #0984e3; padding-bottom: 8px; margin-top: 40px; }
+    h3 { color: #636e72; margin-top: 25px; }
+    .card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { text-align: left; padding: 10px; border-bottom: 1px solid #dfe6e9; }
+    th { background: #f1f2f6; font-weight: 600; }
+    code { background: #2d3436; color: #00cec9; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+    pre { background: #2d3436; color: #dfe6e9; padding: 15px; border-radius: 8px; overflow-x: auto; }
+    .diagram { background: white; border: 1px solid #dfe6e9; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 20px; }
+    .diagram img { max-width: 100%; }
+    ul { line-height: 1.8; }
+    .tag { display: inline-block; background: #0984e3; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-right: 5px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Shooter - Documentation complète</h1>
+    <p>Jeu de tir vertical style Xenon 2 — MonoGame / .NET 6</p>
+  </header>
+
+  <nav>
+    <a href="#overview">Vue d'ensemble</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#class-diagram">Diagramme de classes</a>
+    <a href="#sequence-diagram">Diagramme de séquence</a>
+    <a href="#files">Fichiers source</a>
+    <a href="#config">Configurations XML</a>
+    <a href="#gameplay">Gameplay &amp; contrôles</a>
+    <a href="#build">Build &amp; exécution</a>
+  </nav>
+
+  <div class="container">
+
+    <!-- Vue d'ensemble -->
+    <h2 id="overview">Vue d'ensemble</h2>
+    <div class="card">
+      <p><strong>Shooter</strong> est un <em>shooter vertical</em> inspiré de Xenon 2, développé avec le framework MonoGame en C# et ciblant .NET 6.</p>
+      <ul>
+        <li><strong>Cible :</strong> DesktopGL (Windows/Linux/macOS)</li>
+        <li><strong>Résolution :</strong> 600×800</li>
+        <li><strong>Framework :</strong> MonoGame.Framework.DesktopGL 3.8.1.303</li>
+        <li><strong>Langage :</strong> C# 10 (.NET 6)</li>
+        <li><strong>Données :</strong> Tous les paramètres de jeu sont chargés depuis des fichiers XML (Content/config/)</li>
+        <li><strong>Assets :</strong> Graphismes vectoriels réduits d'un facteur 4–5, générés procéduralement ou importés de packs libres</li>
+      </ul>
+    </div>
+
+    <!-- Architecture -->
+    <h2 id="architecture">Architecture</h2>
+    <div class="card">
+      <p>Le projet suit une hiérarchie de classesSprite rigoureuse :</p>
+      <ul>
+        <li><code>Sprite</code> : base de tout ce qui est dessiné (texture, position, rotation, origine, AABB).</li>
+        <li><code>Entite</code> : ajoute la physique (vitesse/accélération), les PV, la régénération et le tir.</li>
+        <li><code>Personnage</code> : personnage contrôlé (score, vies, invincibilité). <strong>Player</strong> en hérite.</li>
+        <li><code>Creature</code> : entité animée avec patterns de déplacement et d'attaque. <strong>Enemy</strong> en hérite.</li>
+        <li><code>Decors</code> : éléments de décor défilants (parallax, murs, astéroïdes). <strong>DecorElement</strong> en hérite.</li>
+      </ul>
+      <p>Le <strong>GameplayScreen</strong> orchestre toutes les entités, gère les collisions, les spawns, les bonus et le HUD. Les paramètres sont centralisés dans le singleton <strong>GameConfig</strong>, lu depuis des XML via <strong>XmlConfig</strong>.</p>
+    </div>
+
+    <!-- Diagramme de classes -->
+    <h2 id="class-diagram">Diagramme de classes</h2>
+    <div class="diagram">
+      <p><em>Générez l'image avec :</em> <code>plantuml docs/class_diagram.puml</code></p>
+      <pre>@startuml class_diagram
+' (voir docs/class_diagram.puml pour le diagramme complet)
+@enduml</pre>
+    </div>
+
+    <!-- Diagramme de séquence -->
+    <h2 id="sequence-diagram">Diagramme de séquence</h2>
+    <div class="diagram">
+      <p><em>Séquence :</em> Lancement d'une partie, boucle de jeu, tirs, collisions, drop de bonus.</p>
+      <pre>@startuml sequence_diagram
+' (voir docs/sequence_diagram.puml pour le diagramme complet)
+@enduml</pre>
+    </div>
+
+    <!-- Fichiers source -->
+    <h2 id="files">Fichiers source</h2>
+
+    <h3>Structure de base</h3>
+    <div class="card">
+      <table>
+        <tr><th>Fichier</th><th>Rôle</th></tr>
+        <tr><td><code>Program.cs</code></td><td>Point d'entrée de l'application MonoGame.</td></tr>
+        <tr><td><code>GameManager.cs</code></td><td>Sous-classe de Game ; initialise le ScreenManager.</td></tr>
+        <tr><td><code>ScreenManager.cs</code></td><td>Gère les écrans (Menu, Gameplay) et le device graphique.</td></tr>
+        <tr><td><code>GameScreen.cs</code></td><td>Classe abstraite de base pour tous les écrans.</td></tr>
+        <tr><td><code>InputManager.cs</code></td><td>Singleton pour l'état du clavier (KeyDown, KeyPressed).</td></tr>
+        <tr><td><code>MenuScreen.cs</code></td><td>Menu principal avec sélection Start Game / Quit.</td></tr>
+      </table>
+    </div>
+
+    <h3>Hiérarchie Sprite / Entite / Personnage / Creature / Decors</h3>
+    <div class="card">
+      <table>
+        <tr><th>Fichier</th><th>Rôle</th></tr>
+        <tr><td><code>Sprite.cs</code></td><td>Classe abstraite racine. Gestion du rendu, rotation, origine, AABB (<code>Bounds</code>). Fabriques de textures (dot, texte, flèche).</td></tr>
+        <tr><td><code>Entite.cs</code></td><td>Ajoute vitesse, accélération, PV, régénération, cooldown de tir.</td></tr>
+        <tr><td><code>Creature.cs</code></td><td>Ajoute les patterns de mouvement (<code>MovePattern</code>) et d'attaque (<code>BulletPattern</code>).</td></tr>
+        <tr><td><code>Personnage.cs</code></td><td>Ajoute score, vies, invincibilité.</td></tr>
+        <tr><td><code>Decors.cs</code></td><td>Élément de décor avec vitesse de défilement, couche de parallax.</td></tr>
+        <tr><td><code>DecorElement.cs</code></td><td>Instance concrète de décor, recyclable (tile scrolling).</td></tr>
+        <tr><td><code>DecorManager.cs</code></td><td>Construit les murs latéraux, le plafond, les astéroïdes, les étoiles. Expose <code>PlayArea</code>.</td></tr>
+      </table>
+    </div>
+
+    <h3>Entités de jeu</h3>
+    <div class="card">
+      <table>
+        <tr><th>Fichier</th><th>Rôle</th></tr>
+        <tr><td><code>Player.cs</code></td><td>Vaisseau du joueur. 3 tirs, upgrades temps/munitions, invincibilité.</td></tr>
+        <tr><td><code>Enemy.cs</code></td><td>Ennemis avec 4 patterns de déplacement (Sine, Horde, Charge, Zigzag) et 3 patterns de tir (Simple, Burst, Homing).</td></tr>
+        <tr><td><code>Bullet.cs</code></td><td>Projectiles. Support homing avec rayon de recherche et délai d'activation. Marqueurs destructibles pour missiles ennemis.</td></tr>
+        <tr><td><code>Bonus.cs</code></td><td>Bonus tombants collectables (upgrade primaire, secondaire, munitions spéciales).</td></tr>
+        <tr><td><code>Particle.cs</code></td><td>Particules d'explosion.</td></tr>
+        <tr><td><code>Star.cs</code></td><td>Étoiles du fond parallax.</td></tr>
+      </table>
+    </div>
+
+    <h3>Gameplay &amp; Configuration</h3>
+    <div class="card">
+      <table>
+        <tr><th>Fichier</th><th>Rôle</th></tr>
+        <tr><td><code>GameplayScreen.cs</code></td><td>Cœur du jeu : spawn, Update, collisions, rendu, HUD.</td></tr>
+        <tr><td><code>GameConfig.cs</code></td><td>Singleton chargeant tous les XML. Fournit des valeurs par défaut robustes.</td></tr>
+        <tr><td><code>XmlConfig.cs</code></td><td>Classes de sérialisation XML + helpers (ParseColor, ParseSourceRect, ParseEnum).</td></tr>
+      </table>
+    </div>
+
+    <!-- Configurations XML -->
+    <h2 id="config">Configurations XML</h2>
+    <div class="card">
+      <p>Tous les paramètres se trouvent dans <code>Content/config/</code> :</p>
+      <ul>
+        <li><strong>entities.xml</strong> : player (taille, PV, vitesse, rotation), enemy (base).</li>
+        <li><strong>enemies.xml</strong> : archetypes d'ennemis (Scout, Fighter, Tank, Elastic, Kamikaze) avec HP, vitesse, patterns, patterns de tir, couleurs.</li>
+        <li><strong>decors.xml</strong> : murs latéraux, plafond, astéroïdes, étoiles (parallax).</li>
+        <li><strong>bullets.xml</strong> : 5 types de projectiles (joueur primaire, plasma, spécial, ennemi, homing).</li>
+        <li><strong>bonuses.xml</strong> : 3 bonus (PrimaryUpgrade, SecondaryUpgrade, SpecialAmmo).</li>
+      </ul>
+    </div>
+
+    <!-- Gameplay & contrôles -->
+    <h2 id="gameplay">Gameplay &amp; contrôles</h2>
+    <div class="card">
+      <h3>Contrôles</h3>
+      <table>
+        <tr><th>Touche</th><th>Action</th></tr>
+        <tr><td><code>Flèches</code> / <code>WASD</code></td><td>Déplacement du vaisseau</td></tr>
+        <tr><td><code>Espace</code></td><td>Tir primaire (canon rapide, 30/s, dégâts faibles)</td></tr>
+        <tr><td><code>X</code></td><td>Tir secondaire (plasma, 2/s, dégâts moyens)</td></tr>
+        <tr><td><code>C</code></td><td>Tir spécial (rare, nécessite munitions)</td></tr>
+        <tr><td><code>Entrée</code></td><td>Menu / restart après Game Over</td></tr>
+      </table>
+      <h3>Mécaniques</h3>
+      <ul>
+        <li><strong>Upgrades :</strong> Les bonus upgradent le tir primaire ou secondaire pendant 8s (dégâts ×2, changement de couleur).</li>
+        <li><strong>HUD :</strong> Score, vies, vague, barre de PV, munitions spéciales, décomptes d'upgrade.</li>
+        <li><strong>Difficulté progressive :</strong> Le spawn rate augmente avec la vague.</li>
+        <li><strong>Missiles homing ennemis :</strong> Destructibles par les tirs du joueur, valent 5 points.</li>
+      </ul>
+    </div>
+
+    <!-- Build -->
+    <h2 id="build">Build &amp; exécution</h2>
+    <div class="card">
+      <pre>cd ~/Documents/Prog/dotnet/Programs/MonoGames/Shooter
+export PATH="$HOME/.dotnet:$PATH"
+export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+dotnet build</pre>
+      <p>Le binaire produit est <code>bin/Debug/net6.0/Shooter.dll</code>. Exécutez-le avec :</p>
+      <pre>dotnet run</pre>
+      <p>Les assets sont générés par le content pipeline (MGCB) à partir des PNG dans <code>Content/pics/</code>.</p>
+    </div>
+
+    <footer style="text-align:center; color:#b2bec3; padding: 20px; font-size: 0.9em;">
+      Shooter documentation — générée automatiquement
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,31 @@
+# === Build outputs (C# / .NET) ===
+bin/
+obj/
+*.nupkg
+*.nuspec
+
+# === MonoGame ===
+.mgstats
+.config/
+
+# === IDE / Editor ===
+.idea/
+.vs/
+.vscode/
+*.suo
+*.user
+
+# === Debug / Crash dumps ===
+core.*
+*.log
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Transient ===
+*.tmp
+*.cache
+*.swp
+*.swo
+_ipynb_checkpoints/

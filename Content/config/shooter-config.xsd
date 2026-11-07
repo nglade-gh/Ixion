@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Schéma unique pour tous les fichiers de configuration XML du jeu Shooter. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="https://www.timc.fr/nicolas-glade/dotnet/shooter"
+           xmlns="https://www.timc.fr/nicolas-glade/dotnet/shooter"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+
+    <!-- ==============================
+         Types énumérés
+         ============================== -->
+
+    <xs:simpleType name="difficultyPreset">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Easy"/>
+            <xs:enumeration value="Normal"/>
+            <xs:enumeration value="Hard"/>
+            <xs:enumeration value="Expert"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="movePattern">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="sine"/>
+            <xs:enumeration value="horde"/>
+            <xs:enumeration value="charge"/>
+            <xs:enumeration value="zigzag"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="bulletPattern">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="simple"/>
+            <xs:enumeration value="burst"/>
+            <xs:enumeration value="homing"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="bulletKind">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="straight"/>
+            <xs:enumeration value="homing"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="colorString">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="\d{1,3},\d{1,3},\d{1,3}(,\d{1,3})?"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="sourceRectString">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="\d+,\d+,\d+,\d+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="side">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="left"/>
+            <xs:enumeration value="right"/>
+            <xs:enumeration value="top"/>
+            <xs:enumeration value="field"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- ==============================
+         Types communs (entités)
+         ============================== -->
+
+    <xs:complexType name="entityBase">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="texture" type="xs:string"/>
+            <xs:element name="scale" type="xs:float" default="1.0"/>
+            <xs:element name="maxHp" type="xs:int" default="1"/>
+            <xs:element name="regenRate" type="xs:float" default="0"/>
+            <xs:element name="fireRate" type="xs:float" default="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- ==============================
+         entities.xml
+         ============================== -->
+
+    <xs:complexType name="playerParams">
+        <xs:complexContent>
+            <xs:extension base="entityBase">
+                <xs:sequence>
+                    <xs:element name="width" type="xs:int" default="34"/>
+                    <xs:element name="height" type="xs:int" default="48"/>
+                    <xs:element name="maxSpeed" type="xs:float" default="340"/>
+                    <xs:element name="lives" type="xs:int" default="3"/>
+                    <xs:element name="invincibilityDuration" type="xs:float" default="2.0"/>
+                    <xs:element name="initialScore" type="xs:int" default="0"/>
+                    <xs:element name="rotation" type="xs:float" default="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="enemyParams">
+        <xs:complexContent>
+            <xs:extension base="entityBase">
+                <xs:sequence>
+                    <xs:element name="speed" type="xs:float" default="70"/>
+                    <xs:element name="scoreValue" type="xs:int" default="10"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="entities">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="player" type="playerParams"/>
+                <xs:element name="enemy" type="enemyParams"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ==============================
+         enemies.xml
+         ============================== -->
+
+    <xs:complexType name="enemyType">
+        <xs:complexContent>
+            <xs:extension base="enemyParams">
+                <xs:sequence>
+                    <xs:element name="size" type="xs:int" default="46"/>
+                    <xs:element name="hp" type="xs:int" default="1"/>
+                    <xs:element name="score" type="xs:int" default="10"/>
+                    <xs:element name="movePattern" type="movePattern" default="sine"/>
+                    <xs:element name="amplitude" type="xs:float" default="0"/>
+                    <xs:element name="frequency" type="xs:float" default="1.0"/>
+                    <xs:element name="bulletPattern" type="bulletPattern" default="simple"/>
+                    <xs:element name="color" type="colorString" default="255,255,255"/>
+                    <xs:element name="sourceRect" type="sourceRectString" minOccurs="0"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:element name="enemies">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="enemyType" type="enemyType" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ==============================
+         bullets.xml
+         ============================== -->
+
+    <xs:complexType name="bulletParams">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="texture" type="xs:string"/>
+            <xs:element name="sourceRect" type="sourceRectString" minOccurs="0"/>
+            <xs:element name="width" type="xs:int" default="12"/>
+            <xs:element name="height" type="xs:int" default="12"/>
+            <xs:element name="speed" type="xs:float" default="300"/>
+            <xs:element name="damage" type="xs:int" default="10"/>
+            <xs:element name="kind" type="bulletKind" default="straight"/>
+            <xs:element name="homing" type="xs:float" default="0"/>
+            <xs:element name="color" type="colorString" default="255,255,255,255"/>
+            <xs:element name="rotation" type="xs:float" default="0"/>
+            <xs:element name="searchRadius" type="xs:float" default="0"/>
+            <xs:element name="hitPoints" type="xs:int" default="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="bullets">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="bullet" type="bulletParams" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ==============================
+         bonuses.xml
+         ============================== -->
+
+    <xs:complexType name="bonusParams">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="texture" type="xs:string"/>
+            <xs:element name="width" type="xs:int" default="16"/>
+            <xs:element name="height" type="xs:int" default="16"/>
+            <xs:element name="speed" type="xs:float" default="80"/>
+            <xs:element name="color" type="colorString" default="255,255,0,255"/>
+            <xs:element name="amount" type="xs:int" default="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="bonuses">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="bonus" type="bonusParams" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ==============================
+         decors.xml
+         ============================== -->
+
+    <xs:complexType name="decorParams">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="texture" type="xs:string" minOccurs="0"/>
+            <xs:element name="textures" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="texture" type="xs:string" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="side" type="side" default="field"/>
+            <xs:element name="layer" type="xs:int" default="0"/>
+            <xs:element name="scrollSpeed" type="xs:float" default="0"/>
+            <xs:element name="isParallax" type="xs:int" default="1"/>
+            <xs:element name="tile" type="xs:int" default="0"/>
+            <xs:element name="count" type="xs:int" default="1"/>
+            <xs:element name="scale" type="xs:float" default="1.0"/>
+            <xs:element name="minScale" type="xs:float" minOccurs="0"/>
+            <xs:element name="maxScale" type="xs:float" minOccurs="0"/>
+            <xs:element name="color" type="colorString" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="starsParams">
+        <xs:sequence>
+            <xs:element name="count" type="xs:int" default="60"/>
+            <xs:element name="minSpeed" type="xs:float" default="20"/>
+            <xs:element name="maxSpeed" type="xs:float" default="120"/>
+            <xs:element name="minSize" type="xs:float" default="1"/>
+            <xs:element name="maxSize" type="xs:float" default="3"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="decors">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="decorElement" type="decorParams" maxOccurs="unbounded"/>
+                <xs:element name="stars" type="starsParams" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ==============================
+         user_settings.xml
+         ============================== -->
+
+    <xs:complexType name="audioConfig">
+        <xs:sequence>
+            <xs:element name="masterVolume" type="xs:float" default="0.7"/>
+            <xs:element name="musicVolume" type="xs:float" default="0.9"/>
+            <xs:element name="sfxVolume" type="xs:float" default="0.05"/>
+            <xs:element name="muted" type="xs:boolean" default="false"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="videoConfig">
+        <xs:sequence>
+            <xs:element name="width" type="xs:int" default="600"/>
+            <xs:element name="height" type="xs:int" default="800"/>
+            <xs:element name="fullscreen" type="xs:boolean" default="false"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="difficultyConfig">
+        <xs:sequence>
+            <xs:element name="preset" type="difficultyPreset" default="Normal"/>
+            <xs:element name="spawnRateModifier" type="xs:int" default="0"/>
+            <xs:element name="enemyHpModifier" type="xs:int" default="0"/>
+            <xs:element name="enemySpeedModifier" type="xs:int" default="0"/>
+            <xs:element name="playerDamageMultiplier" type="xs:float" default="1.0"/>
+            <xs:element name="shieldStartEnergy" type="xs:float" default="100.0"/>
+            <xs:element name="structureHp" type="xs:int" default="100"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="inputBindingEntry">
+        <xs:sequence>
+            <xs:element name="type" type="xs:string" default="Key"/>
+            <xs:element name="key" type="xs:string" default=""/>
+            <xs:element name="gamepadIndex" type="xs:int" default="0"/>
+        </xs:sequence>
+        <xs:attribute name="action" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="inputConfig">
+        <xs:sequence>
+            <xs:element name="deadzone" type="xs:float" default="0.25"/>
+            <xs:element name="binding" type="inputBindingEntry" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="userSettings">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="video" type="videoConfig"/>
+                <xs:element name="audio" type="audioConfig"/>
+                <xs:element name="difficulty" type="difficultyConfig"/>
+                <xs:element name="input" type="inputConfig"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

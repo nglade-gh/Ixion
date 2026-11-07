@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Shooter - Documentation du code</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; background: #f5f6fa; color: #2d3436; }
+    header { background: #2d3436; color: white; padding: 20px 40px; }
+    header h1 { margin: 0; font-size: 1.8em; }
+    nav { background: #dfe6e9; padding: 10px 40px; position: sticky; top: 0; }
+    nav a { margin-right: 20px; text-decoration: none; color: #2d3436; font-weight: 500; }
+    nav a:hover { color: #0984e3; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 30px 40px; }
+    h2 { color: #2d3436; border-bottom: 2px solid #0984e3; padding-bottom: 8px; margin-top: 40px; }
+    h3 { color: #636e72; margin-top: 25px; }
+    .card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { text-align: left; padding: 10px; border-bottom: 1px solid #dfe6e9; }
+    th { background: #f1f2f6; font-weight: 600; }
+    code { background: #2d3436; color: #00cec9; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+    pre { background: #2d3436; color: #dfe6e9; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 0.85em; }
+    ul { line-height: 1.8; }
+    .tag { display: inline-block; background: #0984e3; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-right: 5px; }
+    .method { color: #e17055; }
+    .property { color: #00b894; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Shooter - Documentation du code</h1>
+    <p>Documentation détaillée des classes, méthodes et mécaniques</p>
+  </header>
+
+  <nav>
+    <a href="#Sprite">Sprite</a>
+    <a href="#Entite">Entite</a>
+    <a href="#Personnage">Personnage</a>
+    <a href="#Creature">Creature</a>
+    <a href="#Decors">Decors</a>
+    <a href="#Player">Player</a>
+    <a href="#Enemy">Enemy</a>
+    <a href="#Bullet">Bullet</a>
+    <a href="#Bonus">Bonus</a>
+    <a href="#GameplayScreen">GameplayScreen</a>
+    <a href="#GameConfig">GameConfig</a>
+    <a href="#XmlConfig">XmlConfig</a>
+  </nav>
+
+  <div class="container">
+
+    <!-- Sprite -->
+    <h2 id="Sprite">Sprite</h2>
+    <div class="card">
+      <p><strong>Fichier :</strong> <code>Sprite.cs</code></p>
+      <p>Classe abstraite racine de tout ce qui est dessiné. Gère la texture, la position, la rotation, l'origine et le rendu via MonoGame.</p>
+      <h3>Propriétés</h3>
+      <table>
+        <tr><th>Propriété</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="property">Position</code></td><td>Vector2</td><td>Position centrale du sprite sur l'écran.</td></tr>
+        <tr><td><code class="property">Size</code></td><td>Vector2</td><td>Taille logique en pixels (avant Scale).</td></tr>
+        <tr><td><code class="property">Scale</code></td><td>float</td><td>Multiplicateur uniforme (utilisé pour réduire les assets).</td></tr>
+        <tr><td><code class="property">Color</code></td><td>Color</td><td>Tinte de rendu (par défaut blanc).</td></tr>
+        <tr><td><code class="property">Rotation</code></td><td>float</td><td>Rotation en degrés (sens horaire).</td></tr>
+        <tr><td><code class="property">Origin</code></td><td>Vector2</td><td>Point d'origine dans la texture.</td></tr>
+        <tr><td><code class="property">Bounds</code></td><td>Rectangle</td><td>AABB du sprite (prend en compte la rotation).</td></tr>
+      </table>
+      <h3>Méthodes</h3>
+      <ul>
+        <li><code class="method">CreateDotTexture</code>(GraphicsDevice, int, Color) : Texture2D — génère une texture de point radial pour particules/étoiles.</li>
+        <li><code class="method">CreateTextTexture</code>(GraphicsDevice, string, SpriteFont, Color) : Texture2D — rend du texte en texture.</li>
+        <li><code class="method">CreateArrowTexture</code>(GraphicsDevice, int, Color) : Texture2D — génère une flèche pour le menu.</li>
+      </ul>
+    </div>
+
+    <!-- Entite -->
+    <h2 id="Entite">Entite</h2>
+    <div class="card">
+      <p><strong>Fichier :</strong> <code>Entite.cs</code></p>
+      <p>Classe abstraite intermédiaire. Ajoute la physique (vitesse/accélération), les points de vie, la régénération et le mécanisme de tir.</p>
+      <h3>Propriétés</h3>
+      <table>
+        <tr><th>Propriété</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="property">Velocity</code></td><td>Vector2</td><td>Vitesse courante en px/s.</td></tr>
+        <tr><td><code class="property">Acceleration</code></td><td>Vector2</td><td>Accélération courante, remise à zéro chaque frame.</td></tr>
+        <tr><td><code class="property">Speed</code></td><td>float</td><td>Vitesse maximale.</td></tr>
+        <tr><td><code class="property">HP</code></td><td>int</td><td>Points de vie courants.</td></tr>
+        <tr><td><code class="property">MaxHP</code></td><td>int</td><td>Points de vie maximum.</td></tr>
+        <tr><td><code class="property">RegenRate</code></td><td>float</td><td>PV regagnés par seconde (0 = pas de regen).</td></tr>
+        <tr><td><code class="property">FireCooldown</code></td><td>float</td><td>Temps restant avant le prochain tir.</td></tr>
+        <tr><td><code class="property">FireRate</code></td><td>float</td><td>Intervalle entre deux tirs (secondes).</td></tr>
+      </table>
+      <h3>Méthodes</h3>
+      <ul>
+        <li><code class="method">TakeDamage</code>(int) : bool — inflige des dégâts, retourne true si l'entité meurt.</li>
+        <li><code class="method">TryFire</code>() : bool — retourne true si le tir est autorisé (cooldown écoulé).</li>
+        <li><code class="method">Update</code>(GameTime) — intègre la physique, le cooldown de tir et la régénération.</li>
+      </ul>
+    </div>
+
+    <!-- Personnage -->
+    <h2 id="Personnage">Personnage</h2>
+    <div class="card">
+      <p><strong>Fichier :</strong> <code>Personnage.cs</code></p>
+      <p>Classe abstraite pour un personnage contrôlé. Ajoute le score, les vies et une période d'invincibilité après avoir été touché.</p>
+      <h3>Propriétés</h3>
+      <table>
+        <tr><th>Propriété</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="property">Score</code></td><td>int</td><td>Score du joueur.</td></tr>
+        <tr><td><code class="property">Lives</code></td><td>int</td><td>Vies restantes.</td></tr>
+        <tr><td><code class="property">InvincibleTimer</code></td><td>float</td><td>Temps d'invincibilité restant.</td></tr>
+        <tr><td><code class="property">InvincibleDuration</code></td><td>float</td><td>Durée d'invincibilité après un hit (secondes).</td></tr>
+        <tr><td><code class="property">Invincible</code></td><td>bool</td><td>Indique si le personnage est actuellement invincible.</td></tr>
+      </table>
+      <h3>Méthodes</h3>
+      <ul>
+        <li><code class="method">TakeHit</code>() — consomme une vie, active l'invincibilité. Si plus de vies, l'entité est désactivée.</li>
+      </ul>
+    </div>
+
+    <!-- Creature -->
+    <h2 id="Creature">Creature</h2>
+    <div class="card">
+      <p><strong>Fichier :</strong> <code>Creature.cs</code></p>
+      <p>Classe abstraite pour les entités animées (ennemis). Définit les patterns de mouvement et d'attaque.</p>
+      <h3>Enums</h3>
+      <ul>
+        <li><code>MovePattern</code> : <code>Sine</code>, <code>Horde</code>, <code>Charge</code>, <code>Zigzag</code></li>
+        <li><code>BulletPattern</code> : <code>Simple</code>, <code>Burst</code>, <code>Homing</code></li>
+      </ul>
+      <h3>Propriétés</h3>
+      <table>
+        <tr><th>Propriété</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="property">MoveTimer</code></td><td>float</td><td>Temps écoulé depuis l'apparition.</td></tr>
+        <tr><td><code class="property">Amplitude</code></td><td>float</td><td>Amplitude des oscillations horizontales.</td></tr>
+        <tr><td><code class="property">Frequency</code></td><td>float</td><td>Fréquence des oscillations (rad/s).</td></tr>
+        <tr><td><code class="property">ScoreValue</code></td><td>int</td><td>Points accordés à la destruction.</td></tr>
+        <tr><td><code class="property">BulletPattern</code></td><td>BulletPattern</td><td>Type d'attaque à distance.</td></tr>
+      </table>
+    </div>
+
+    <!-- Decors -->
+    <h2 id="Decors">Decors</h2>
+    <div class="card">
+      <p><strong>Fichier :</strong> <code>Decors.cs</code></p>
+      <p>Classe abstraite pour les éléments de décor défilants. Définit la vitesse de scroll et la couche de rendu (parallax).</p>
+      <h3>Propriétés</h3>
+      <table>
+        <tr><th>Propriété</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="property">ScrollSpeed</code></td><td>float</td><td>Vitesse de défilement vers le bas (px/s).</td></tr>
+        <tr><td><code class="property">Layer</code></td><td>int</td><td>0 = arrière-plan, 1 = milieu, 2 = premier plan.</td></tr>
+        <tr><td><code class="property">IsParallax</code></td><td>bool</td><td>Si true, l'élément défile.</td></tr>
+      </table>
+    </div>
+
+    <!-- Player -->
+    <h2 id="Player">Player</h2>
+    <div class="card">
+      <p><strong>Fichier :</strong> <code>Player.cs</code></p>
+      <p>Vaisseau du joueur. Contrôle les tirs primaire/secondaire/spécial, les upgrades et la collecte de bonus.</p>
+      <h3>Propriétés de tir</h3>
+      <table>
+        <tr><th>Propriété</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="property">CooldownPrimary</code></td><td>float</td><td>Cooldown du tir primaire.</td></tr>
+        <tr><td><code class="property">CooldownSecondary</code></td><td>float</td><td>Cooldown du tir secondaire.</td></tr>
+        <tr><td><code class="property">CooldownSpecial</code></td><td>float</td><td>Cooldown du tir spécial.</td></tr>
+        <tr><td><code class="property">PrimaryUpgraded</code></td><td>bool</td><td>Indique si le tir primaire est amélioré.</td></tr>
+        <tr><td><code class="property">PrimaryUpgradeTimer</code></td><td>float</td><td>Temps restant de l'upgrade primaire.</td></tr>
+        <tr><td><code class="property">PrimaryUpgradeAmmo</code></td><td>int</td><td>Munitions restantes pour l'upgrade primaire.</td></tr>
+        <tr><td><code class="property">SecondaryUpgraded</code></td><td>bool</td><td>Indique si le tir secondaire est amélioré.</td></tr>
+        <tr><td><code class="property">SecondaryUpgradeTimer</code></td><td>float</td><td>Temps restant de l'upgrade secondaire.</td></tr>
+        <tr><td><code class="property">SecondaryUpgradeAmmo</code></td><td>int</td><td>Munitions restantes pour l'upgrade secondaire.</td></tr>
+        <tr><td><code class="property">SpecialAmmo</code></td><td>int</td><td>Munitions du tir spécial.</td></tr>
+      </table>
+      <h3>Méthodes</h3>
+      <ul>
+        <li><code class="method">TryFirePrimary</code>() : bool — tente un tir primaire (30/s).</li>
+        <li><code class="method">TryFireSecondary</code>() : bool — tente un tir secondaire (2/s, dégâts doublés si upgrade).</li>
+        <li><code class="method">TryFireSpecial</code>() : bool — tente un tir spécial (consomme une munition).</li>
+        <li><code class="method">ApplyPrimaryUpgrade</code>(float duration, int ammo) — applique un upgrade temps/munitions au tir primaire.</li>
+        <li><code class="method">ApplySecondaryUpgrade</code>(float duration, int ammo) — applique un upgrade au tir secondaire.</li>
+        <li><code class="method">AddSpecialAmmo</code>(int amount) — ajoute des munitions spéciales.</li>
+        <li><code class="method">SetPlayArea</code>(Rectangle) — définit la zone de jeu autorisée.</li>
+      </ul>
+    </div>
+
+    <!-- Enemy -->
+    <h2 id="Enemy">Enemy</h2>
+    <div class="card">
+      <p><strong>Fichier :</strong> <code>Enemy.cs</code></p>
+      <p>Ennemi concret. Définit le comportement de déplacement selon 4 patterns (Sine, Horde, Charge, Zigzag) et 3 patterns de tir (Simple, Burst, Homing).</p>
+      <h3>Propriétés</h3>
+      <table>
+        <tr><th>Propriété</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="property">TargetPosition</code></td><td>Vector2</td><td>Cible actuelle du pattern Charge.</td></tr>
+        <tr><td><code class="property">ExplosionColor</code></td><td>Color</td><td>Couleur des particules d'explosion.</td></tr>
+      </table>
+      <h3>Patterns de mouvement</h3>
+      <ul>
+        <li><strong>Sine :</strong> oscillation horizontale sinusoidale.</li>
+        <li><strong>Horde :</strong> dérive douce en groupe.</li>
+        <li><strong>Charge :</strong> descente puis plonge vers le joueur.</li>
+        <li><strong>Zigzag :</strong> changements de direction brusques gauche/droite.</li>
+      </ul>
+    </div>
+
+    <!-- Bullet -->
+    <h2 id="Bullet">Bullet</h2>
+    <div class="card">
+      <p><strong>Fichier :</strong> <code>Bullet.cs</code></p>
+      <p>Projectile. Peut être droit, homing, ou destructible (missiles ennemis).</p>
+      <h3>Propriétés</h3>
+      <table>
+        <tr><th>Propriété</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code class="property">Velocity</code></td><td>Vector2</td><td>Vecteur vitesse.</td></tr>
+        <tr><td><code class="property">Damage</code></td><td>int</td><td>Dégâts infligés à la cible.</td></tr>
+        <tr><td><code class="property">HomingTurnRate</code></td><td>float</td><td>Taux de virage vers la cible (degrés/s). 0 = pas de homing.</td></tr>
+        <tr><td><code class="property">Target</code></td><td>Entite</td><td>Cible poursuivie par le missile.</td></tr>
+        <tr><td><code class="property">SearchRadius</code></td><td>float</td><td>Rayon de recherche avant activation du homing.</td></tr>
+        <tr><td><code class="property">HomingDelay</code></td><td>float</td><td>Délai avant activation du homing (secondes).</td></tr>
+        <tr><td><code class="property">IsHomingMissile</code></td><td>bool</td><td>Marque le projectile comme destructible par le joueur.</td></tr>
+      </table>
+    </div>
+
+    <!-- Bonus -->
+    <h2 id="Bonus">Bonus</h2>
+    <div class="card">
+      <p><strong>Fichier :</strong> <code>Bonus.cs</code></p>
+      <p>Bonus tombant depuis un ennemi détruit. Hérite de Sprite.</p>
+      <h3>Propriétés</h3>
+      <ul>
+        <li><code class="property">Params</code> (BonusParams) — paramètres du bonus (nom, vitesse, couleur).</li>
+      </ul>
+      <h3>Méthodes</h3>
+      <ul>
+        <li><code class="method">Update</code>(GameTime) — fait descendre le bonus et le désactive quand il sort de l'écran.</li>
+      </ul>
+    </div>
+
+    <!-- GameplayScreen -->
+    <h2 id="GameplayScreen">GameplayScreen</h2>
+    <div class="card">
+      <p><strong>Fichier :</strong> <code>GameplayScreen.cs</code></p>
+      <p>Écran principal de jeu. Orchestre toutes les entités, gère les collisions, les spawns, les bonus et le HUD.</p>
+      <h3>Responsabilités</h3>
+      <ul>
+        <li>Chargement des textures et initialisation des entités.</li>
+        <li>Boucle de jeu : Update (input, spawn, collisions, AI) + Draw (décor, entités, HUD).</li>
+        <li>Gestion des 3 modes de tir (primaire, secondaire, spécial) avec leurs upgrades respectifs.</li>
+        <li>Système de collisions AABB avec marges de tolérance.</li>
+        <li>Drop de bonus (8% de chance) et application des effets.</li>
+        <li>Difficulté progressive (augmentation du spawn rate).</li>
+      </ul>
+    </div>
+
+    <!-- GameConfig -->
+    <h2 id="GameConfig">GameConfig</h2>
+    <div class="card">
+      <p><strong>Fichier :</strong> <code>GameConfig.cs</code></p>
+      <p>Singleton chargeant toutes les configurations XML. Fournit des valeurs par défaut robustes si un fichier est absent ou corrompu.</p>
+      <h3>Méthodes</h3>
+      <ul>
+        <li><code class="method">LoadAll</code>() — charge tous les XML (entities, enemies, decors, bullets, bonuses).</li>
+        <li><code class="method">ContentKey</code>(string) : string — convertit un chemin de texture en clé de contenu (supprime .png).</li>
+        <li><code class="method">GetBullet</code>(string) : BulletParams — recherche un projectile par nom.</li>
+        <li><code class="method">GetEnemyType</code>(string) : EnemyType — recherche un type d'ennemi par nom.</li>
+        <li><code class="method">GetBonus</code>(string) : BonusParams — recherche un bonus par nom.</li>
+      </ul>
+    </div>
+
+    <!-- XmlConfig -->
+    <h2 id="XmlConfig">XmlConfig</h2>
+    <div class="card">
+      <p><strong>Fichier :</strong> <code>XmlConfig.cs</code></p>
+      <p>Classes de sérialisation XML et helpers utilitaires.</p>
+      <h3>Helpers statiques</h3>
+      <ul>
+        <li><code class="method">ParseColor</code>(string, Color) — parse "r,g,b" ou "r,g,b,a".</li>
+        <li><code class="method">ParseSourceRect</code>(string) : Rectangle? — parse "x,y,w,h".</li>
+        <li><code class="method">ParseEnum&lt;T&gt;</code>(string, T) : T — parse un enum, insensible à la casse.</li>
+      </ul>
+      <h3>Classes de paramètres</h3>
+      <ul>
+        <li><code>EntityParams</code> — base (nom, texture, scale, PV, regen, fireRate).</li>
+        <li><code>PlayerParams</code> — dimensions, vitesse, vies, invincibilité, rotation.</li>
+        <li><code>EnemyType</code> — taille, HP, score, patterns de mouvement et de tir, couleur.</li>
+        <li><code>DecorParams</code> — côté, couche, vitesse, textures multiples, scale.</li>
+        <li><code>BulletParams</code> — dimensions, vitesse, dégâts, homing, rayon de recherche, couleur.</li>
+        <li><code>BonusParams</code> — dimensions, vitesse, couleur.</li>
+      </ul>
+    </div>
+
+    <footer style="text-align:center; color:#b2bec3; padding: 20px; font-size: 0.9em;">
+      Shooter documentation du code — générée automatiquement
+    </footer>
+  </div>
+</body>
+</html>
