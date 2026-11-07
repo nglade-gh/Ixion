@@ -110,14 +110,44 @@ public class Player : Personnage
     public float LaserHeatPerShot => LaserHeatPerShotBase * (1f + AppConfig.Difficulty.LaserHeatRateModifier / 100f);
 
     /// <summary>
-    /// Base cooling rate per second (heat removed).
+    /// Base cooling rate per second (chaleur retirée) — quand on ne tire pas.
+    /// 20 = 5 secondes pour refroidir de 100 à 0.
     /// </summary>
-    public const float LaserCoolingRate = 20f;
+    public const float LaserCoolingRateBase = 20f;
 
     /// <summary>
     /// Multiplicateur de refroidissement (appliqué par bonus RapidCool).
     /// </summary>
     public float LaserCoolingMultiplier { get; set; } = 1f;
+
+    /// <summary>
+    /// Taux de refroidissement effectif, basé sur le paramètre de difficulté.
+    /// </summary>
+    public float LaserCoolingRate =>
+        LaserCoolingRateBase * (1f + AppConfig.Difficulty.LaserCoolingRateModifier / 100f);
+
+    /// <summary>
+    /// Taux de refroidissement quand on arrête de tirer (plus rapide).
+    /// Calculé de façon identique mais avec un multiplicateur de repos.
+    /// </summary>
+    public float LaserCoolingRateWhileIdle =>
+        LaserCoolingRate * AppConfig.Difficulty.LaserIdleCoolMultiplier;
+
+    /// <summary>
+    /// True si le joueur n'a pas tiré depuis LaserIdleThreshold secondes.
+    /// </summary>
+    private float _lastFireTime = -1f;
+    private const float LaserIdleThreshold = 0.15f; // 150ms sans tir = repos
+
+    public void UpdateIdleState(bool isFiring)
+    {
+        if (isFiring)
+            _lastFireTime = 0f;
+        else if (_lastFireTime >= 0f)
+            _lastFireTime += 1f / 60f; // approx dt
+    }
+
+    public bool IsIdle => _lastFireTime >= LaserIdleThreshold;
 
     /// <summary>
     /// Seuil de surchauffe (fraction de max).
@@ -153,12 +183,14 @@ public class Player : Personnage
 
     /// <summary>
     /// Refroidit le laser selon le taux actuel.
+    /// Plus rapide quand on arrête de tirer.
     /// </summary>
     /// <param name="dt">Delta time en secondes.</param>
     public void CoolLaser(float dt)
     {
         if (LaserHeat <= 0f) return;
-        float cooling = LaserCoolingRate * LaserCoolingMultiplier * dt;
+        float rate = IsIdle ? LaserCoolingRateWhileIdle : LaserCoolingRate;
+        float cooling = rate * LaserCoolingMultiplier * dt;
         LaserHeat = Math.Max(0f, LaserHeat - cooling);
     }
 
@@ -287,6 +319,9 @@ public class Player : Personnage
             }
         }
 
+        // Update idle state for cooling
+        UpdateIdleState(CooldownPrimary <= 0f);
+        
         // Laser cooling
         CoolLaser(dt);
 

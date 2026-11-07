@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Linq;
+using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace Shooter;
@@ -30,15 +29,15 @@ public enum DifficultyPreset
 public class InputBinding
 {
     /// <summary>Type de périphérique : Key ou Gamepad.</summary>
-    [JsonPropertyName("type")]
+    [XmlElement("type")]
     public string Type { get; set; } = "Key";
 
     /// <summary>Touche ou bouton associé.</summary>
-    [JsonPropertyName("key")]
+    [XmlElement("key")]
     public string Key { get; set; } = "";
 
     /// <summary>Index manette (0-3) si type=Gamepad.</summary>
-    [JsonPropertyName("gamepadIndex")]
+    [XmlElement("gamepadIndex")]
     public int GamepadIndex { get; set; } = 0;
 }
 
@@ -47,16 +46,16 @@ public class InputBinding
 /// </summary>
 public class AudioConfig
 {
-    [JsonPropertyName("masterVolume")]
+    [XmlElement("masterVolume")]
     public float MasterVolume { get; set; } = 0.7f;
 
-    [JsonPropertyName("musicVolume")]
+    [XmlElement("musicVolume")]
     public float MusicVolume { get; set; } = 0.9f;
 
-    [JsonPropertyName("sfxVolume")]
+    [XmlElement("sfxVolume")]
     public float SfxVolume { get; set; } = 0.05f;
 
-    [JsonPropertyName("muted")]
+    [XmlElement("muted")]
     public bool Muted { get; set; } = false;
 }
 
@@ -65,17 +64,17 @@ public class AudioConfig
 /// </summary>
 public class VideoConfig
 {
-    [JsonPropertyName("width")]
+    [XmlElement("width")]
     public int Width { get; set; } = 600;
 
-    [JsonPropertyName("height")]
+    [XmlElement("height")]
     public int Height { get; set; } = 800;
 
-    [JsonPropertyName("fullscreen")]
+    [XmlElement("fullscreen")]
     public bool Fullscreen { get; set; } = false;
 
     /// <summary>Liste des résolutions supportées.</summary>
-    [JsonIgnore]
+    [XmlIgnore]
     public static List<(int W, int H)> SupportedResolutions => new()
     {
         (600, 800),
@@ -92,33 +91,38 @@ public class VideoConfig
 /// </summary>
 public class DifficultyConfig
 {
-    [JsonPropertyName("preset")]
+    [XmlElement("preset")]
     public DifficultyPreset Preset { get; set; } = DifficultyPreset.Normal;
 
     // Fine-tuning (-100 to +100 percent modifier)
-    [JsonPropertyName("spawnRateModifier")]
+    [XmlElement("spawnRateModifier")]
     public int SpawnRateModifier { get; set; } = 0;
 
-    [JsonPropertyName("enemyHpModifier")]
+    [XmlElement("enemyHpModifier")]
     public int EnemyHpModifier { get; set; } = 0;
 
-    [JsonPropertyName("enemySpeedModifier")]
+    [XmlElement("enemySpeedModifier")]
     public int EnemySpeedModifier { get; set; } = 0;
 
-    [JsonPropertyName("playerDamageMultiplier")]
+    [XmlElement("playerDamageMultiplier")]
     public float PlayerDamageMultiplier { get; set; } = 1.0f;
 
-    [JsonPropertyName("shieldStartEnergy")]
+    [XmlElement("shieldStartEnergy")]
     public float ShieldStartEnergy { get; set; } = 100f;
 
-    [JsonPropertyName("structureHp")]
+    [XmlElement("structureHp")]
     public int StructureHp { get; set; } = 100;
 
-    [JsonPropertyName("laserHeatRateModifier")]
+    [XmlElement("laserHeatRateModifier")]
     public int LaserHeatRateModifier { get; set; } = 0;
 
-    [JsonPropertyName("difficultyLabel")]
-    [JsonIgnore]
+    [XmlElement("laserCoolingRateModifier")]
+    public int LaserCoolingRateModifier { get; set; } = 0;
+
+    [XmlElement("laserIdleCoolMultiplier")]
+    public float LaserIdleCoolMultiplier { get; set; } = 2.5f;
+
+    [XmlIgnore]
     public string DifficultyLabel
     {
         get
@@ -126,7 +130,8 @@ public class DifficultyConfig
             if (SpawnRateModifier != 0 || EnemyHpModifier != 0 ||
                 EnemySpeedModifier != 0 || PlayerDamageMultiplier != 1.0f ||
                 ShieldStartEnergy != 100f || StructureHp != 100 ||
-                LaserHeatRateModifier != 0)
+                LaserHeatRateModifier != 0 || LaserCoolingRateModifier != 0 ||
+                LaserIdleCoolMultiplier != 2.5f)
                 return $"{Preset:F0} (custom)";
             return Preset.ToString();
         }
@@ -134,26 +139,48 @@ public class DifficultyConfig
 }
 
 /// <summary>
-/// Dictionnaire pour la désérialisation JSON des bindings.
+/// Dictionnaire pour la sérialisation XML des bindings.
 /// key = action name, value = InputBinding.
 /// </summary>
 public class InputConfig
 {
-    [JsonPropertyName("bindings")]
-    public Dictionary<string, InputBinding> Bindings { get; set; } = new();
+    [XmlArray("bindings")]
+    [XmlArrayItem("binding")]
+    public List<BindingEntry> BindingsList { get; set; } = new();
 
-    [JsonPropertyName("deadzone")]
+    [XmlIgnore]
+    public Dictionary<string, InputBinding> Bindings => new(BindingsList.ToDictionary(e => e.Key, e => e.Value));
+
+    public void SetBindings(Dictionary<string, InputBinding> dict)
+    {
+        BindingsList = new List<BindingEntry>();
+        foreach (var kv in dict)
+            BindingsList.Add(new BindingEntry { Key = kv.Key, Value = kv.Value });
+    }
+
+    [XmlElement("deadzone")]
     public float Deadzone { get; set; } = 0.25f;
+
+    /// <summary>Entry helper for serializing a Dictionary.</summary>
+    public class BindingEntry
+    {
+        [XmlElement("key")]
+        public string Key { get; set; } = "";
+        [XmlElement("value")]
+        public InputBinding Value { get; set; } = new();
+    }
 }
 
 /// <summary>
-/// Configuration globale de l'application. Sérialisé en JSON
-/// vers <c>Config/game.json</c>.
+/// Configuration globale de l'application. Sérialisé en XML
+/// vers <c>Config/game.xml</c>.
 /// </summary>
 public static class AppConfig
 {
+    private const string ShooterNamespace = "https://www.timc.fr/nicolas-glade/dotnet/shooter";
+
     private static string ConfigPath =>
-        Path.Combine(AppContext.BaseDirectory, "Config", "game.json");
+        Path.Combine(AppContext.BaseDirectory, "Config", "game.xml");
 
     private static VideoConfig _video = new();
     private static AudioConfig _audio = new();
@@ -172,7 +199,9 @@ public static class AppConfig
             PlayerDamageMultiplier = 1.5f,
             ShieldStartEnergy = 120f,
             StructureHp = 120,
-            LaserHeatRateModifier = -80
+            LaserHeatRateModifier = -80,
+            LaserCoolingRateModifier = 200,
+            LaserIdleCoolMultiplier = 3.0f
         },
         [DifficultyPreset.Normal] = new()
         {
@@ -183,7 +212,9 @@ public static class AppConfig
             PlayerDamageMultiplier = 1.0f,
             ShieldStartEnergy = 100f,
             StructureHp = 100,
-            LaserHeatRateModifier = -66
+            LaserHeatRateModifier = -66,
+            LaserCoolingRateModifier = 100,
+            LaserIdleCoolMultiplier = 2.5f
         },
         [DifficultyPreset.Hard] = new()
         {
@@ -194,7 +225,9 @@ public static class AppConfig
             PlayerDamageMultiplier = 0.8f,
             ShieldStartEnergy = 80f,
             StructureHp = 80,
-            LaserHeatRateModifier = -50
+            LaserHeatRateModifier = -50,
+            LaserCoolingRateModifier = 75,
+            LaserIdleCoolMultiplier = 2.0f
         },
         [DifficultyPreset.Expert] = new()
         {
@@ -205,7 +238,9 @@ public static class AppConfig
             PlayerDamageMultiplier = 0.5f,
             ShieldStartEnergy = 50f,
             StructureHp = 50,
-            LaserHeatRateModifier = -33
+            LaserHeatRateModifier = -33,
+            LaserCoolingRateModifier = 50,
+            LaserIdleCoolMultiplier = 1.5f
         }
     };
 
@@ -224,7 +259,7 @@ public static class AppConfig
     public static InputConfig Input => _input;
 
     /// <summary>
-    /// Charge la configuration depuis le fichier JSON.
+    /// Charge la configuration depuis le fichier XML.
     /// Crée des valeurs par défaut si le fichier est absent.
     /// </summary>
     public static void Load()
@@ -233,8 +268,9 @@ public static class AppConfig
         {
             if (File.Exists(ConfigPath))
             {
-                var json = File.ReadAllText(ConfigPath);
-                var loaded = JsonSerializer.Deserialize<AppConfigData>(json);
+                using var stream = File.OpenRead(ConfigPath);
+                var serializer = new XmlSerializer(typeof(AppConfigData), ShooterNamespace);
+                var loaded = (AppConfigData)serializer.Deserialize(stream);
                 if (loaded != null)
                 {
                     if (loaded.Video != null) _video = loaded.Video;
@@ -242,18 +278,32 @@ public static class AppConfig
                     if (loaded.Difficulty != null)
                     {
                         _difficulty = loaded.Difficulty;
-                        // Merge with preset baseline
-                        var baseline = _presets[loaded.Difficulty.Preset];
-                        _difficulty.Preset = loaded.Difficulty.Preset;
+                        // Merge with preset baseline (handles missing fields in old files)
+                        var baseline = _presets[_difficulty.Preset];
+                        _difficulty.Preset = baseline.Preset;
                         _difficulty.SpawnRateModifier = loaded.Difficulty.SpawnRateModifier;
                         _difficulty.EnemyHpModifier = loaded.Difficulty.EnemyHpModifier;
                         _difficulty.EnemySpeedModifier = loaded.Difficulty.EnemySpeedModifier;
                         _difficulty.PlayerDamageMultiplier = loaded.Difficulty.PlayerDamageMultiplier;
                         _difficulty.ShieldStartEnergy = loaded.Difficulty.ShieldStartEnergy;
                         _difficulty.StructureHp = loaded.Difficulty.StructureHp;
-                        _difficulty.LaserHeatRateModifier = loaded.Difficulty.LaserHeatRateModifier;
+                        _difficulty.LaserHeatRateModifier = baseline.LaserHeatRateModifier;
+                        if (loaded.Difficulty.LaserHeatRateModifier != 0)
+                            _difficulty.LaserHeatRateModifier = loaded.Difficulty.LaserHeatRateModifier;
+                        _difficulty.LaserCoolingRateModifier = baseline.LaserCoolingRateModifier;
+                        if (loaded.Difficulty.LaserCoolingRateModifier != 0)
+                            _difficulty.LaserCoolingRateModifier = loaded.Difficulty.LaserCoolingRateModifier;
+                        _difficulty.LaserIdleCoolMultiplier = baseline.LaserIdleCoolMultiplier;
+                        if (Math.Abs(loaded.Difficulty.LaserIdleCoolMultiplier - 2.5f) > 0.01f)
+                            _difficulty.LaserIdleCoolMultiplier = loaded.Difficulty.LaserIdleCoolMultiplier;
                     }
-                    if (loaded.Input != null) _input = loaded.Input;
+                    if (loaded.Input != null)
+                    {
+                        _input = loaded.Input;
+                        // Rebuild dictionary from serialized list
+                        if (_input.BindingsList.Count == 0 && _input.Bindings.Count == 0)
+                            _input = CreateDefaultBindings();
+                    }
                     return;
                 }
             }
@@ -266,7 +316,7 @@ public static class AppConfig
     }
 
     /// <summary>
-    /// Sauvegarde la configuration dans le fichier JSON.
+    /// Sauvegarde la configuration dans le fichier XML.
     /// </summary>
     public static void Save()
     {
@@ -283,12 +333,11 @@ public static class AppConfig
                 Difficulty = _difficulty,
                 Input = _input
             };
-            var json = JsonSerializer.Serialize(data, new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never
-            });
-            File.WriteAllText(ConfigPath, json);
+            var serializer = new XmlSerializer(typeof(AppConfigData), ShooterNamespace);
+            using var writer = new StreamWriter(ConfigPath);
+            var ns = new XmlSerializerNamespaces();
+            ns.Add("", ShooterNamespace);
+            serializer.Serialize(writer, data, ns);
         }
         catch (Exception ex)
         {
@@ -324,6 +373,7 @@ public static class AppConfig
             _difficulty.ShieldStartEnergy = baseline.ShieldStartEnergy;
             _difficulty.StructureHp = baseline.StructureHp;
             _difficulty.LaserHeatRateModifier = baseline.LaserHeatRateModifier;
+            _difficulty.LaserCoolingRateModifier = baseline.LaserCoolingRateModifier;
             Save();
         }
     }
@@ -359,36 +409,45 @@ public static class AppConfig
     /// </summary>
     private static InputConfig CreateDefaultBindings()
     {
-        return new InputConfig
+        var config = new InputConfig
         {
             Deadzone = 0.25f,
-            Bindings = new Dictionary<string, InputBinding>
-            {
-                ["MoveUp"] = new InputBinding { Type = "Key", Key = "Up" },
-                ["MoveDown"] = new InputBinding { Type = "Key", Key = "Down" },
-                ["MoveLeft"] = new InputBinding { Type = "Key", Key = "Left" },
-                ["MoveRight"] = new InputBinding { Type = "Key", Key = "Right" },
-                ["FirePrimary"] = new InputBinding { Type = "Key", Key = "Space" },
-                ["FireSecondary"] = new InputBinding { Type = "Key", Key = "X" },
-                ["FireSpecial"] = new InputBinding { Type = "Key", Key = "C" },
-                ["MenuUp"] = new InputBinding { Type = "Key", Key = "Up" },
-                ["MenuDown"] = new InputBinding { Type = "Key", Key = "Down" },
-                ["MenuSelect"] = new InputBinding { Type = "Key", Key = "Enter" },
-                ["MenuBack"] = new InputBinding { Type = "Key", Key = "Escape" },
-                ["PauseGame"] = new InputBinding { Type = "Key", Key = "Escape" }
-            }
         };
+        config.SetBindings(new Dictionary<string, InputBinding>
+        {
+            ["MoveUp"] = new InputBinding { Type = "Key", Key = "Up" },
+            ["MoveDown"] = new InputBinding { Type = "Key", Key = "Down" },
+            ["MoveLeft"] = new InputBinding { Type = "Key", Key = "Left" },
+            ["MoveRight"] = new InputBinding { Type = "Key", Key = "Right" },
+            ["FirePrimary"] = new InputBinding { Type = "Key", Key = "Space" },
+            ["FireSecondary"] = new InputBinding { Type = "Key", Key = "X" },
+            ["FireSpecial"] = new InputBinding { Type = "Key", Key = "C" },
+            ["MenuUp"] = new InputBinding { Type = "Key", Key = "Up" },
+            ["MenuDown"] = new InputBinding { Type = "Key", Key = "Down" },
+            ["MenuSelect"] = new InputBinding { Type = "Key", Key = "Enter" },
+            ["MenuBack"] = new InputBinding { Type = "Key", Key = "Escape" },
+            ["PauseGame"] = new InputBinding { Type = "Key", Key = "Escape" }
+        });
+        return config;
     }
 
     /// <summary>
-    /// Données intermédiaires pour la sérialisation JSON.
+    /// Données intermédiaires pour la sérialisation XML.
     /// </summary>
-    private class AppConfigData
+    [XmlRoot("config", Namespace = ShooterNamespace)]
+    public class AppConfigData
     {
-        public VideoConfig Video { get; set; }
-        public AudioConfig Audio { get; set; }
-        public DifficultyConfig Difficulty { get; set; }
-        public InputConfig Input { get; set; }
+        [XmlElement("video")]
+        public VideoConfig Video { get; set; } = new();
+
+        [XmlElement("audio")]
+        public AudioConfig Audio { get; set; } = new();
+
+        [XmlElement("difficulty")]
+        public DifficultyConfig Difficulty { get; set; } = new();
+
+        [XmlElement("input")]
+        public InputConfig Input { get; set; } = new();
     }
 }
 

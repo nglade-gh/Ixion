@@ -320,6 +320,10 @@ public class SetupScreen : GameScreen
         {
             d.LaserHeatRateModifier = Math.Clamp(d.LaserHeatRateModifier + inc, -100, 100);
         }
+        else if (index == 8)
+        {
+            d.LaserIdleCoolMultiplier = Math.Clamp(d.LaserIdleCoolMultiplier + inc * 0.1f, 1.0f, 5.0f);
+        }
         AppConfig.Save();
     }
 
@@ -377,6 +381,7 @@ public class SetupScreen : GameScreen
                 "Degats Joueur : " + d.PlayerDamageMultiplier.ToString("F1") + "x",
                 "Structure : " + d.StructureHp + " PV",
                 "Chauffe Laser : " + d.LaserHeatRateModifier.ToString("+0;-0") + "%",
+                "Refroid. Repos : " + d.LaserIdleCoolMultiplier.ToString("F1") + "x",
                 "Retour"
             };
         }
