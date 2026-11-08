@@ -345,6 +345,10 @@ public class GameplayScreen : GameScreen
 
         _player.Update(gameTime);
 
+        // Vérifie les files d'attente de bonus
+        _player.ProcessPrimaryQueue();
+        _player.ProcessSecondaryQueue();
+
         // Player firing
         if (InputService.Instance.IsActionHeld("FirePrimary") && _player.TryFirePrimary())
         {
@@ -841,7 +845,7 @@ public class GameplayScreen : GameScreen
             if (bullet.Bounds.Intersects(playerBox))
             {
                 bullet.IsActive = false;
-                _player.TakeDamage(10);
+                _player.TakeDamage(_gameplaySettings.EnemyBulletDamage, _gameplaySettings.EnemyBulletDamage);
                 if (_audio != null) _audio.PlaySfx("shield_hit");
                 if (!_player.IsActive)
                 {
@@ -860,7 +864,7 @@ public class GameplayScreen : GameScreen
             {
                 enemy.IsActive = false;
                 SpawnExplosion(enemy.Position, "Explosion_Vaisseau_Gros", 1f);
-                _player.TakeDamage(20);
+                _player.TakeDamage(_gameplaySettings.EnemyContactDamage, _gameplaySettings.EnemyContactDamage);
                 if (_audio != null) _audio.PlaySfx("explosion_large");
                 if (!_player.IsActive)
                 {

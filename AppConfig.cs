@@ -122,6 +122,43 @@ public class DifficultyConfig
     [XmlElement("laserIdleCoolMultiplier")]
     public float LaserIdleCoolMultiplier { get; set; } = 2.5f;
 
+    [XmlElement("enemyBulletDamage")]
+    public int EnemyBulletDamage { get; set; } = 10;
+
+    [XmlElement("enemyContactDamage")]
+    public int EnemyContactDamage { get; set; } = 20;
+
+    // Bonus stat values (default values match bonuses.xml)
+    [XmlElement("primaryUpgradeDuration")]
+    public float PrimaryUpgradeDuration { get; set; } = 8f;
+
+    [XmlElement("primaryUpgradeDamageMultiplier")]
+    public float PrimaryUpgradeDamageMultiplier { get; set; } = 2f;
+
+    [XmlElement("secondaryUpgradeDuration")]
+    public float SecondaryUpgradeDuration { get; set; } = 8f;
+
+    [XmlElement("secondaryUpgradeDamageMultiplier")]
+    public float SecondaryUpgradeDamageMultiplier { get; set; } = 2f;
+
+    [XmlElement("shieldRepairAmount")]
+    public int ShieldRepairAmount { get; set; } = 30;
+
+    [XmlElement("structureRepairAmount")]
+    public int StructureRepairAmount { get; set; } = 20;
+
+    [XmlElement("rapidCoolDuration")]
+    public float RapidCoolDuration { get; set; } = 20f;
+
+    [XmlElement("diagonalShotDuration")]
+    public float DiagonalShotDuration { get; set; } = 15f;
+
+    [XmlElement("powerShotDuration")]
+    public float PowerShotDuration { get; set; } = 20f;
+
+    [XmlElement("tripleShotDuration")]
+    public float TripleShotDuration { get; set; } = 15f;
+
     [XmlIgnore]
     public string DifficultyLabel
     {
@@ -131,7 +168,13 @@ public class DifficultyConfig
                 EnemySpeedModifier != 0 || PlayerDamageMultiplier != 1.0f ||
                 ShieldStartEnergy != 100f || StructureHp != 100 ||
                 LaserHeatRateModifier != 0 || LaserCoolingRateModifier != 0 ||
-                LaserIdleCoolMultiplier != 2.5f)
+                LaserIdleCoolMultiplier != 2.5f ||
+                EnemyBulletDamage != 10 || EnemyContactDamage != 20 ||
+                PrimaryUpgradeDuration != 8f || PrimaryUpgradeDamageMultiplier != 2f ||
+                SecondaryUpgradeDuration != 8f || SecondaryUpgradeDamageMultiplier != 2f ||
+                ShieldRepairAmount != 30 || StructureRepairAmount != 20 ||
+                RapidCoolDuration != 20f || DiagonalShotDuration != 15f ||
+                PowerShotDuration != 20f || TripleShotDuration != 15f)
                 return $"{Preset:F0} (custom)";
             return Preset.ToString();
         }
@@ -201,7 +244,19 @@ public static class AppConfig
             StructureHp = 120,
             LaserHeatRateModifier = -80,
             LaserCoolingRateModifier = 200,
-            LaserIdleCoolMultiplier = 3.0f
+            LaserIdleCoolMultiplier = 3.0f,
+            EnemyBulletDamage = 7,
+            EnemyContactDamage = 14,
+            PrimaryUpgradeDuration = 8f,
+            PrimaryUpgradeDamageMultiplier = 2f,
+            SecondaryUpgradeDuration = 8f,
+            SecondaryUpgradeDamageMultiplier = 2f,
+            ShieldRepairAmount = 30,
+            StructureRepairAmount = 20,
+            RapidCoolDuration = 20f,
+            DiagonalShotDuration = 15f,
+            PowerShotDuration = 20f,
+            TripleShotDuration = 15f
         },
         [DifficultyPreset.Normal] = new()
         {
@@ -214,7 +269,19 @@ public static class AppConfig
             StructureHp = 100,
             LaserHeatRateModifier = -66,
             LaserCoolingRateModifier = 100,
-            LaserIdleCoolMultiplier = 2.5f
+            LaserIdleCoolMultiplier = 2.5f,
+            EnemyBulletDamage = 10,
+            EnemyContactDamage = 20,
+            PrimaryUpgradeDuration = 8f,
+            PrimaryUpgradeDamageMultiplier = 2f,
+            SecondaryUpgradeDuration = 8f,
+            SecondaryUpgradeDamageMultiplier = 2f,
+            ShieldRepairAmount = 30,
+            StructureRepairAmount = 20,
+            RapidCoolDuration = 20f,
+            DiagonalShotDuration = 15f,
+            PowerShotDuration = 20f,
+            TripleShotDuration = 15f
         },
         [DifficultyPreset.Hard] = new()
         {
@@ -227,7 +294,19 @@ public static class AppConfig
             StructureHp = 80,
             LaserHeatRateModifier = -50,
             LaserCoolingRateModifier = 75,
-            LaserIdleCoolMultiplier = 2.0f
+            LaserIdleCoolMultiplier = 2.0f,
+            EnemyBulletDamage = 12,
+            EnemyContactDamage = 24,
+            PrimaryUpgradeDuration = 8f,
+            PrimaryUpgradeDamageMultiplier = 2f,
+            SecondaryUpgradeDuration = 8f,
+            SecondaryUpgradeDamageMultiplier = 2f,
+            ShieldRepairAmount = 30,
+            StructureRepairAmount = 20,
+            RapidCoolDuration = 20f,
+            DiagonalShotDuration = 15f,
+            PowerShotDuration = 20f,
+            TripleShotDuration = 15f
         },
         [DifficultyPreset.Expert] = new()
         {
@@ -240,7 +319,19 @@ public static class AppConfig
             StructureHp = 50,
             LaserHeatRateModifier = -33,
             LaserCoolingRateModifier = 50,
-            LaserIdleCoolMultiplier = 1.5f
+            LaserIdleCoolMultiplier = 1.5f,
+            EnemyBulletDamage = 15,
+            EnemyContactDamage = 30,
+            PrimaryUpgradeDuration = 8f,
+            PrimaryUpgradeDamageMultiplier = 2f,
+            SecondaryUpgradeDuration = 8f,
+            SecondaryUpgradeDamageMultiplier = 2f,
+            ShieldRepairAmount = 30,
+            StructureRepairAmount = 20,
+            RapidCoolDuration = 20f,
+            DiagonalShotDuration = 15f,
+            PowerShotDuration = 20f,
+            TripleShotDuration = 15f
         }
     };
 
@@ -296,6 +387,42 @@ public static class AppConfig
                         _difficulty.LaserIdleCoolMultiplier = baseline.LaserIdleCoolMultiplier;
                         if (Math.Abs(loaded.Difficulty.LaserIdleCoolMultiplier - 2.5f) > 0.01f)
                             _difficulty.LaserIdleCoolMultiplier = loaded.Difficulty.LaserIdleCoolMultiplier;
+                        _difficulty.EnemyBulletDamage = baseline.EnemyBulletDamage;
+                        if (loaded.Difficulty.EnemyBulletDamage != 10)
+                            _difficulty.EnemyBulletDamage = loaded.Difficulty.EnemyBulletDamage;
+                        _difficulty.EnemyContactDamage = baseline.EnemyContactDamage;
+                        if (loaded.Difficulty.EnemyContactDamage != 20)
+                            _difficulty.EnemyContactDamage = loaded.Difficulty.EnemyContactDamage;
+                        _difficulty.PrimaryUpgradeDuration = baseline.PrimaryUpgradeDuration;
+                        if (Math.Abs(loaded.Difficulty.PrimaryUpgradeDuration - 8f) > 0.001f)
+                            _difficulty.PrimaryUpgradeDuration = loaded.Difficulty.PrimaryUpgradeDuration;
+                        _difficulty.PrimaryUpgradeDamageMultiplier = baseline.PrimaryUpgradeDamageMultiplier;
+                        if (Math.Abs(loaded.Difficulty.PrimaryUpgradeDamageMultiplier - 2f) > 0.001f)
+                            _difficulty.PrimaryUpgradeDamageMultiplier = loaded.Difficulty.PrimaryUpgradeDamageMultiplier;
+                        _difficulty.SecondaryUpgradeDuration = baseline.SecondaryUpgradeDuration;
+                        if (Math.Abs(loaded.Difficulty.SecondaryUpgradeDuration - 8f) > 0.001f)
+                            _difficulty.SecondaryUpgradeDuration = loaded.Difficulty.SecondaryUpgradeDuration;
+                        _difficulty.SecondaryUpgradeDamageMultiplier = baseline.SecondaryUpgradeDamageMultiplier;
+                        if (Math.Abs(loaded.Difficulty.SecondaryUpgradeDamageMultiplier - 2f) > 0.001f)
+                            _difficulty.SecondaryUpgradeDamageMultiplier = loaded.Difficulty.SecondaryUpgradeDamageMultiplier;
+                        _difficulty.ShieldRepairAmount = baseline.ShieldRepairAmount;
+                        if (loaded.Difficulty.ShieldRepairAmount != 30)
+                            _difficulty.ShieldRepairAmount = loaded.Difficulty.ShieldRepairAmount;
+                        _difficulty.StructureRepairAmount = baseline.StructureRepairAmount;
+                        if (loaded.Difficulty.StructureRepairAmount != 20)
+                            _difficulty.StructureRepairAmount = loaded.Difficulty.StructureRepairAmount;
+                        _difficulty.RapidCoolDuration = baseline.RapidCoolDuration;
+                        if (Math.Abs(loaded.Difficulty.RapidCoolDuration - 20f) > 0.001f)
+                            _difficulty.RapidCoolDuration = loaded.Difficulty.RapidCoolDuration;
+                        _difficulty.DiagonalShotDuration = baseline.DiagonalShotDuration;
+                        if (Math.Abs(loaded.Difficulty.DiagonalShotDuration - 15f) > 0.001f)
+                            _difficulty.DiagonalShotDuration = loaded.Difficulty.DiagonalShotDuration;
+                        _difficulty.PowerShotDuration = baseline.PowerShotDuration;
+                        if (Math.Abs(loaded.Difficulty.PowerShotDuration - 20f) > 0.001f)
+                            _difficulty.PowerShotDuration = loaded.Difficulty.PowerShotDuration;
+                        _difficulty.TripleShotDuration = baseline.TripleShotDuration;
+                        if (Math.Abs(loaded.Difficulty.TripleShotDuration - 15f) > 0.001f)
+                            _difficulty.TripleShotDuration = loaded.Difficulty.TripleShotDuration;
                     }
                     if (loaded.Input != null)
                     {
@@ -374,6 +501,19 @@ public static class AppConfig
             _difficulty.StructureHp = baseline.StructureHp;
             _difficulty.LaserHeatRateModifier = baseline.LaserHeatRateModifier;
             _difficulty.LaserCoolingRateModifier = baseline.LaserCoolingRateModifier;
+            _difficulty.LaserIdleCoolMultiplier = baseline.LaserIdleCoolMultiplier;
+            _difficulty.EnemyBulletDamage = baseline.EnemyBulletDamage;
+            _difficulty.EnemyContactDamage = baseline.EnemyContactDamage;
+            _difficulty.PrimaryUpgradeDuration = baseline.PrimaryUpgradeDuration;
+            _difficulty.PrimaryUpgradeDamageMultiplier = baseline.PrimaryUpgradeDamageMultiplier;
+            _difficulty.SecondaryUpgradeDuration = baseline.SecondaryUpgradeDuration;
+            _difficulty.SecondaryUpgradeDamageMultiplier = baseline.SecondaryUpgradeDamageMultiplier;
+            _difficulty.ShieldRepairAmount = baseline.ShieldRepairAmount;
+            _difficulty.StructureRepairAmount = baseline.StructureRepairAmount;
+            _difficulty.RapidCoolDuration = baseline.RapidCoolDuration;
+            _difficulty.DiagonalShotDuration = baseline.DiagonalShotDuration;
+            _difficulty.PowerShotDuration = baseline.PowerShotDuration;
+            _difficulty.TripleShotDuration = baseline.TripleShotDuration;
             Save();
         }
     }
@@ -400,7 +540,9 @@ public static class AppConfig
             PlayerShieldStart = _difficulty.ShieldStartEnergy,
             PlayerStructureHp = _difficulty.StructureHp,
             ShieldRegenMultiplier = _shieldRegenPresets.TryGetValue(_difficulty.Preset, out float regen)
-                ? regen : 1.0f
+                ? regen : 1.0f,
+            EnemyBulletDamage = _difficulty.EnemyBulletDamage,
+            EnemyContactDamage = _difficulty.EnemyContactDamage
         };
     }
 
@@ -471,4 +613,14 @@ public class GameplaySettings
     /// 1.5 = facile (rapide), 1.0 = normal, 0.7 = dur (lent), 0.5 = expert (très lent).
     /// </summary>
     public float ShieldRegenMultiplier { get; set; } = 1f;
+
+    /// <summary>
+    /// Dégâts causés par les tirs ennemis sur le bouclier/structure.
+    /// </summary>
+    public int EnemyBulletDamage { get; set; } = 10;
+
+    /// <summary>
+    /// Dégâts causés par le contact des ennemis avec le joueur.
+    /// </summary>
+    public int EnemyContactDamage { get; set; } = 20;
 }

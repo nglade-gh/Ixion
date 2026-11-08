@@ -32,7 +32,7 @@ public class SetupScreen : GameScreen
     /// <summary>
     /// Hauteur du panneau de configuration.
     /// </summary>
-    private const int PanelHeight = 500;
+    private const int PanelHeight = 800;
     private bool _needsVideoApply;
     private bool _lastRight;
     private bool _lastLeft;
@@ -185,10 +185,16 @@ public class SetupScreen : GameScreen
         }
         else if (_activeMenu == SubMenu.Difficulty)
         {
-            // 7 items : indices 0-6. Pas de wrap pour éviter le défilement infini.
+            // 21 items : indices 0-20 (Preset, Spawn, PV Ennemis, Vitesse Ennemis, Degats Joueur,
+            // Structure, Chauffe Laser, Refroid. Repos, Deg. Bouclier Ennemi, Deg. Contact Ennemi,
+            // Duree Upgrade Primaire, Multi Deg. Primaire, Duree Upgrade Secondaire,
+            // Multi Deg. Secondaire, Reparation Bouclier, Reparation Structure,
+            // Duree RapidCool, Duree DiagonalShot, Duree PowerShot, Duree TripleShot, Retour)
+            const int difficultyItemCount = 21;
+            // Pas de wrap pour éviter le défilement infini.
             if (_selectedIndex < 0) _selectedIndex = 0;
-            if (_selectedIndex > 6) _selectedIndex = 6;
-            if (_selectedIndex < 6)
+            if (_selectedIndex > difficultyItemCount - 1) _selectedIndex = difficultyItemCount - 1;
+            if (_selectedIndex < difficultyItemCount - 1)
                 AdjustDifficultySetting(_selectedIndex, rightPressed, leftPressed);
             else if (InputManager.KeyPressed(Keys.Enter))
             {
@@ -317,6 +323,54 @@ public class SetupScreen : GameScreen
         {
             d.LaserIdleCoolMultiplier = Math.Clamp(d.LaserIdleCoolMultiplier + inc * 0.1f, 1.0f, 5.0f);
         }
+        else if (index == 9)
+        {
+            d.EnemyBulletDamage = Math.Clamp(d.EnemyBulletDamage + inc, 1, 100);
+        }
+        else if (index == 10)
+        {
+            d.EnemyContactDamage = Math.Clamp(d.EnemyContactDamage + inc, 1, 100);
+        }
+        else if (index == 11)
+        {
+            d.PrimaryUpgradeDuration = Math.Clamp(d.PrimaryUpgradeDuration + inc * 0.5f, 1f, 60f);
+        }
+        else if (index == 12)
+        {
+            d.PrimaryUpgradeDamageMultiplier = Math.Clamp(d.PrimaryUpgradeDamageMultiplier + 0.1f, 1f, 5f);
+        }
+        else if (index == 13)
+        {
+            d.SecondaryUpgradeDuration = Math.Clamp(d.SecondaryUpgradeDuration + inc * 0.5f, 1f, 60f);
+        }
+        else if (index == 14)
+        {
+            d.SecondaryUpgradeDamageMultiplier = Math.Clamp(d.SecondaryUpgradeDamageMultiplier + 0.1f, 1f, 5f);
+        }
+        else if (index == 15)
+        {
+            d.ShieldRepairAmount = Math.Clamp(d.ShieldRepairAmount + inc, 1, 100);
+        }
+        else if (index == 16)
+        {
+            d.StructureRepairAmount = Math.Clamp(d.StructureRepairAmount + inc, 1, 200);
+        }
+        else if (index == 17)
+        {
+            d.RapidCoolDuration = Math.Clamp(d.RapidCoolDuration + inc * 0.5f, 1f, 60f);
+        }
+        else if (index == 18)
+        {
+            d.DiagonalShotDuration = Math.Clamp(d.DiagonalShotDuration + inc * 0.5f, 1f, 60f);
+        }
+        else if (index == 19)
+        {
+            d.PowerShotDuration = Math.Clamp(d.PowerShotDuration + inc * 0.5f, 1f, 60f);
+        }
+        else if (index == 20)
+        {
+            d.TripleShotDuration = Math.Clamp(d.TripleShotDuration + inc * 0.5f, 1f, 60f);
+        }
         AppConfig.Save();
     }
 
@@ -375,6 +429,18 @@ public class SetupScreen : GameScreen
                 "Structure : " + d.StructureHp + " PV",
                 "Chauffe Laser : " + d.LaserHeatRateModifier.ToString("+0;-0") + "%",
                 "Refroid. Repos : " + d.LaserIdleCoolMultiplier.ToString("F1") + "x",
+                "Deg. Bouclier Ennemi : " + d.EnemyBulletDamage,
+                "Deg. Contact Ennemi : " + d.EnemyContactDamage,
+                "Duree Upg. Primaire : " + d.PrimaryUpgradeDuration.ToString("F1") + "s",
+                "Multi Deg. Primaire : " + d.PrimaryUpgradeDamageMultiplier.ToString("F1") + "x",
+                "Duree Upg. Secondaire : " + d.SecondaryUpgradeDuration.ToString("F1") + "s",
+                "Multi Deg. Secondaire : " + d.SecondaryUpgradeDamageMultiplier.ToString("F1") + "x",
+                "Reparation Bouclier : " + d.ShieldRepairAmount + " PV",
+                "Reparation Structure : " + d.StructureRepairAmount + " PV",
+                "Duree RapidCool : " + d.RapidCoolDuration.ToString("F1") + "s",
+                "Duree DiagonalShot : " + d.DiagonalShotDuration.ToString("F1") + "s",
+                "Duree PowerShot : " + d.PowerShotDuration.ToString("F1") + "s",
+                "Duree TripleShot : " + d.TripleShotDuration.ToString("F1") + "s",
                 "Retour"
             };
         }

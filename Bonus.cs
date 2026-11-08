@@ -84,7 +84,7 @@ public class Bonus : Sprite
         float pad = 8f;
         float bw = Size.X * Scale + pad * 2f;
         float bh = Size.Y * Scale + pad * 2f;
-        float alpha = 0.1f; // 10% d'opacité = shield très transparent (90% transparent)
+        float alpha = 0.3f; // 30% d'opacité = shield très transparent mais visible
 
         Vector2 center = new Vector2(Position.X, Position.Y);
         spriteBatch.Draw(_whitePixel, center, null,

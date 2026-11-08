@@ -488,6 +488,245 @@ Shooter/
 
 ---
 
+## Installation
+
+### Prérequis
+
+| Logiciel | Version minimale | Où le télécharger |
+|---|---|---|
+| .NET 6.0 SDK | 6.0.400+ | [dotnet.microsoft.com/download/dotnet/6.0](https://dotnet.microsoft.com/download/dotnet/6.0) |
+
+> .NET 8.0+ fonctionne aussi, mais 6.0 est la version cible de ce projet.
+
+---
+
+### Sous Windows
+
+1. **Installer .NET 6.0 SDK**
+   - Télécharger le *Windows Installer (x64)* depuis le lien ci-dessus.
+   - Exécuter `dotnet-sdk-6.0.x-win-x64.exe` et suivre l'assistant.
+   - Ouvrir une nouvelle fenêtre d'Invite de commandes (CMD) ou PowerShell pour vérifier :
+     ```cmd
+     dotnet --version
+     ```
+     Doit afficher `6.x.x` ou supérieur.
+
+2. **Cloner ou extraire le jeu**
+   - Si vous clonez le dépôt :
+     ```cmd
+     git clone https://votre-url/mon-shooter.git
+     cd mon-shooter
+     ```
+   - Si vous téléchargez une archive `.zip`, extraire le dossier `Shooter/` à l'endroit souhaité.
+
+3. **Compiler le contenu et le code**
+   - Ouvrir un terminal dans le dossier du projet :
+     ```cmd
+     cd Shooter
+     dotnet build
+     ```
+   - Cette commande compile le code C#, construit les assets MonoGame (textures, sons, polices), et place le tout dans `bin/Release/net6.0/` (ou `bin/Debug/`).
+
+4. **Lancer le jeu**
+   ```cmd
+   dotnet run --project Shooter.csproj
+   ```
+
+5. **Créer une distribution autonome (sans .NET installé)**
+   ```cmd
+   dotnet publish -c Release -r win-x64 -p:PublishReadyToRun=false -p:TieredCompilation=false --self-contained
+   ```
+   - Les fichiers sont placés dans `bin/Release/net6.0/win-x64/publish/`.
+   - Copier tout ce dossier sur la machine cible. Le jeu se lance en double-cliquant sur `Shooter.exe`.
+
+---
+
+### Sous Linux
+
+1. **Installer .NET 6.0 SDK**
+
+   **Debian / Ubuntu / Linux Mint :**
+   ```bash
+   sudo apt update
+   sudo apt install -y apt-transport-https apt-utils
+   sudo mkdir -pm 755 /etc/apt/keyrings
+   wget -O- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /etc/apt/keyrings/packages.microsoft.gpg
+   echo "deb [arch=amd64 sign=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/debian/12/prod stable main" | sudo tee /etc/apt/sources.list.d/microsoft.list > /dev/null
+   sudo apt update
+   sudo apt install -y dotnet-sdk-6.0
+   ```
+
+   **Fedora :**
+   ```bash
+   sudo dnf install dotnet-sdk-6.0
+   ```
+
+   **Arch Linux :**
+   ```bash
+   yay -S dotnet6-sdk
+   ```
+
+   Vérifier :
+   ```bash
+   dotnet --version
+   ```
+
+2. **Installer les dépendances système (bibliothèques graphiques)**
+   ```bash
+   # Debian / Ubuntu
+   sudo apt install -y libsdl2-2.0-0 libasound2 libopenal1 libsndio7.0
+
+   # Fedora
+   sudo dnf install -y SDL2 alsa-lib libsndio-openal
+   ```
+
+3. **Compiler et lancer**
+   ```bash
+   cd Shooter
+   dotnet build
+   dotnet run --project Shooter.csproj
+   ```
+
+4. **Créer une distribution autonome**
+   ```bash
+   dotnet publish -c Release -r linux-x64 -p:PublishReadyToRun=false -p:TieredCompilation=false --self-contained
+   ```
+   - Les fichiers sont dans `bin/Release/net6.0/linux-x64/publish/`.
+   - Distribuer le dossier complet.
+
+   > Pour créer un **AppImage** : utiliser l'utilitaire [Publish-AppImage](https://github.com/kuiperzone/Publish-AppImage)
+   > qui automatise le `dotnet publish` et l'emballage en `.AppImage`.
+
+---
+
+### Sous macOS
+
+1. **Installer .NET 6.0 SDK**
+   - Via Homebrew :
+     ```bash
+     brew install --cask dotnet-sdk
+     ```
+   - Ou depuis [dotnet.microsoft.com](https://dotnet.microsoft.com/download/dotnet/6.0) (télécharger le `macOS ARM64 Installer` pour Apple Silicon ou `macOS x64 Installer` pour Intel).
+   - Vérifier :
+     ```bash
+     dotnet --version
+     ```
+
+2. **Compiler et lancer**
+   ```bash
+   cd Shooter
+   dotnet build
+   dotnet run --project Shooter.csproj
+   ```
+
+3. **Créer une distribution autonome**
+
+   **Pour Apple Silicon (M1/M2/M3) :**
+   ```bash
+   dotnet publish -c Release -r osx-arm64 -p:PublishReadyToRun=false -p:TieredCompilation=false --self-contained
+   ```
+
+   **Pour Intel (x64) :**
+   ```bash
+   dotnet publish -c Release -r osx-x64 -p:PublishReadyToRun=false -p:TieredCompilation=false --self-contained
+   ```
+
+   **Pour les deux (binaire universel) :**
+   ```bash
+   # Publier pour les deux architectures
+   dotnet publish -c Release -r osx-arm64 -p:PublishReadyToRun=false -p:TieredCompilation=false --self-contained
+   dotnet publish -c Release -r osx-x64 -p:PublishReadyToRun=false -p:TieredCompilation=false --self-contained
+
+   # Fusionner les exécutables en un seul binaire universel
+   lipo -create \
+     bin/Release/net6.0/osx-arm64/publish/Shooter \
+     bin/Release/net6.0/osx-x64/publish/Shooter \
+     -output bin/Release/net6.0/universal/Shooter
+
+   # Créer un .app bundle
+   mkdir -p bin/Release/net6.0/Shooter.app/Contents/MacOS
+   mkdir -p bin/Release/net6.0/Shooter.app/Contents/Resources/Content
+
+   cp bin/Release/net6.0/universal/Shooter bin/Release/net6.0/Shooter.app/Contents/MacOS/
+   cp -R bin/Release/net6.0/osx-arm64/publish/Content bin/Release/net6.0/Shooter.app/Contents/Resources/
+   cp -R bin/Release/net6.0/osx-arm64/publish/runtimes bin/Release/net6.0/Shooter.app/Contents/Resources/
+
+   cp bin/Release/net6.0/Shooter.app/Contents/MacOS/Shooter bin/Release/net6.0/Shooter.app/Contents/MacOS/MonogameGame
+   chmod +x bin/Release/net6.0/Shooter.app/Contents/MacOS/Shooter
+   chmod +x bin/Release/net6.0/Shooter.app/Contents/MacOS/MonogameGame
+   ```
+
+   > **Signature et notarization** (obligatoire pour les Mac récents si distribution publique) :
+   > - Obtenir un *Apple Developer Program* membership.
+   > - Signer : `codesign --force --deep --sign "Votre Certificate ID" Shooter.app`
+   > - Notarizer : `xcrun notarytool submit Shooter.zip --wait --keychain-profile "MonProfil"`
+   > - Stapler : `xcrun stapler staple Shooter.app`
+
+---
+
+## Installeur et distribution
+
+MonoGame ne fournit pas d'outil d'installation intégré. La méthode recommandée par la
+documentation officielle est un **archive (ZIP / tar.gz)** contenant tous les fichiers
+d'un `dotnet publish --self-contained`. Voici les options disponibles selon la plateforme :
+
+### Windows
+
+| Méthode | Complexité | Résultat |
+|---|---|---|
+| **Archive ZIP** | Aucune | L'utilisateur extrait et double-clique sur `.exe`. |
+| **NSIS (Nullsoft)** | Moyenne | Installateur avec wizard, raccourcis, désinstallateur. |
+| **Inno Setup** | Moyenne | Similaire à NSIS, plus simple à apprendre. |
+| **MSI / WiX** | Élevée | Installateur Windows officiel. Surdimensionné pour un petit jeu. |
+
+**Recommandation** : une archive ZIP suffit pour un jeu de cette taille. Si vous souhaitez un installeur, **Inno Setup** est le compromis le plus simple (fichiers `.iss` declaratifs, prise en charge des raccourcis et de la désinstallation).
+
+Exemple de script Inno Setup minimal :
+```ini
+[Setup]
+AppName=Shooter
+AppVersion=1.0
+DefaultDirName={pf}\Shooter
+OutputDir=.
+OutputBaseFilename=Shooter-Setup
+
+[Files]
+Source: "bin\Release\net6.0\win-x64\publish\*"; DestDir: "{app}"; Flags: recursesubdirs
+
+[Icons]
+Name: "{userdesktop}\Shooter"; Filename: "{app}\Shooter.exe"
+Name: "{group}\Shooter"; Filename: "{app}\Shooter.exe"
+```
+
+### Linux
+
+| Méthode | Complexité | Résultat |
+|---|---|---|
+| **Archive tar.gz** | Aucune | L'utilisateur extrait et lance le binaire. |
+| **AppImage** | Faible-Moyenne | Binaire autonome avec icône de bureau, « copier-coller et lancer ». |
+| **Flatpak** | Élevée | Plateforme de distribution standardisée (federation avec app stores). |
+| **Paquet .deb / .rpm** | Moyenne | Installation via gestionnaire de paquets système. |
+
+**Recommandation** : une archive `tar.gz` suffit pour les utilisateurs expérimentés. Pour le grand public, **AppImage** (via [Publish-AppImage](https://github.com/kuiperzone/Publish-AppImage)) est le plus simple : une commande génère un fichier `.AppImage` avec icône, lanceurs, etc.
+
+### macOS
+
+| Méthode | Complexité | Résultat |
+|---|---|---|
+| **Archive tar.gz** | Aucune | Binaires bruts, nécessite signature. |
+| **Dossier .app** | Moyenne | Application native macOS avec icône et Info.plist. |
+| **Disque .dmg** | Moyenne | Image disque avec raccourci vers /Applications. |
+| **Notarization** | Élevée | Obligatoire pour distribution publique (Apple Developer ID requis). |
+
+**Recommandation** : créer un `.app` bundle avec `lipo` (binaire universel), l'envoyer dans une image `.dmg`, et si distribution publique : le signer et le notarizer.
+
+> **Note sur le PublishSingleFile** : bien qu'il soit tentant de regrouper tout en un seul exécutable
+> (`PublishSingleFile=true`), la documentation MonoGame recommande explicitement de ne pas l'utiliser
+> pour les jeux : cela augmente significativement le temps de démarrage et peut échouer sur des systèmes
+> avec des permissions restreintes.
+
+---
+
 ## Architecture logicielle
 
 ### Gestionnaire d'écrans (`ScreenManager`)

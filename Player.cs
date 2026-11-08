@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -68,6 +69,16 @@ public class Player : Personnage
     /// Durée totale de l'upgrade secondaire, en secondes.
     /// </summary>
     public float SecondaryUpgradeDuration { get; private set; }
+
+    /// <summary>
+    /// File d'attente pour l'empilement des upgrades primaires.
+    /// </summary>
+    private readonly Queue<(float Duration, int Ammo)> _primaryUpgradeQueue = new();
+
+    /// <summary>
+    /// File d'attente pour l'empilement des upgrades secondaires.
+    /// </summary>
+    private readonly Queue<(float Duration, int Ammo)> _secondaryUpgradeQueue = new();
 
     /// <summary>
     /// Munitions disponibles pour le tir spécial.
@@ -384,10 +395,22 @@ public class Player : Personnage
 
     /// <summary>
     /// Applique un upgrade au tir primaire (temps limité et/ou munitions limitées).
+    /// Si un upgrade similaire est déjà actif, il est empilé en file d'attente.
     /// </summary>
     /// <param name="duration">Durée de l'upgrade en secondes.</param>
     /// <param name="ammo">Nombre de munitions (0 = temps seulement).</param>
     public void ApplyPrimaryUpgrade(float duration, int ammo)
+    {
+        if (PrimaryUpgraded && PrimaryUpgradeTimer > 0f)
+        {
+            // Empiler en file d'attente
+            _primaryUpgradeQueue.Enqueue((duration, ammo));
+            return;
+        }
+        StartPrimaryUpgrade(duration, ammo);
+    }
+
+    private void StartPrimaryUpgrade(float duration, int ammo)
     {
         PrimaryUpgraded = true;
         PrimaryUpgradeDuration = duration;
@@ -397,16 +420,68 @@ public class Player : Personnage
 
     /// <summary>
     /// Applique un upgrade au tir secondaire (temps limité et/ou munitions limitées).
+    /// Si un upgrade similaire est déjà actif, il est empilé en file d'attente.
     /// </summary>
     /// <param name="duration">Durée de l'upgrade en secondes.</param>
     /// <param name="ammo">Nombre de munitions (0 = temps seulement).</param>
     public void ApplySecondaryUpgrade(float duration, int ammo)
+    {
+        if (SecondaryUpgraded && SecondaryUpgradeDuration > 0f && SecondaryUpgradeTimer > 0f)
+        {
+            // Empiler en file d'attente
+            _secondaryUpgradeQueue.Enqueue((duration, ammo));
+            return;
+        }
+        StartSecondaryUpgrade(duration, ammo);
+    }
+
+    private void StartSecondaryUpgrade(float duration, int ammo)
     {
         SecondaryUpgraded = true;
         SecondaryUpgradeDuration = duration;
         SecondaryUpgradeTimer = duration;
         SecondaryUpgradeAmmo = ammo;
     }
+
+    /// <summary>
+    /// Vérifie et applique automatiquement le prochain bonus en file d'attente.
+    /// </summary>
+    internal void ProcessPrimaryQueue()
+    {
+        if (!PrimaryUpgraded || PrimaryUpgradeTimer <= 0f)
+        {
+            if (_primaryUpgradeQueue.Count > 0)
+            {
+                var next = _primaryUpgradeQueue.Dequeue();
+                StartPrimaryUpgrade(next.Duration, next.Ammo);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Vérifie et applique automatiquement le prochain bonus en file d'attente.
+    /// </summary>
+    internal void ProcessSecondaryQueue()
+    {
+        if (SecondaryUpgraded && SecondaryUpgradeTimer <= 0f)
+        {
+            if (_secondaryUpgradeQueue.Count > 0)
+            {
+                var next = _secondaryUpgradeQueue.Dequeue();
+                StartSecondaryUpgrade(next.Duration, next.Ammo);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Retourne le nombre d'entrées en attente dans la file primaire.
+    /// </summary>
+    internal int PrimaryQueueCount => _primaryUpgradeQueue.Count;
+
+    /// <summary>
+    /// Retourne le nombre d'entrées en attente dans la file secondaire.
+    /// </summary>
+    internal int SecondaryQueueCount => _secondaryUpgradeQueue.Count;
 
     /// <summary>
     /// Ajoute des munitions pour le tir spécial.
@@ -435,16 +510,17 @@ public class Player : Personnage
     /// <summary>
     /// Applique des dégâts au joueur. Le bouclier absorbe les dégâts en priorité.
     /// </summary>
-    /// <param name="amount">Montant de dégâts.</param>
+    /// <param name="shieldDamage">Montant de dégâts sur le bouclier.</param>
+    /// <param name="structureDamage">Montant de dégâts sur la structure.</param>
     /// <returns>True si le joueur a été tué (structure à 0), false sinon.</returns>
-    public new bool TakeDamage(int amount)
+    public new bool TakeDamage(int shieldDamage, int structureDamage)
     {
-        if (amount <= 0) return false;
+        if (shieldDamage <= 0 && structureDamage <= 0) return false;
 
         if (ShieldEnergy > 0f)
         {
             // Shield absorbs damage first
-            ShieldEnergy = Math.Max(0f, ShieldEnergy - 10f);
+            ShieldEnergy = Math.Max(0f, ShieldEnergy - shieldDamage);
             // Sync visual intensity with energy level
             Shield?.TriggerBlast();
             if (Shield != null)
@@ -454,7 +530,7 @@ public class Player : Personnage
         else
         {
             // Damage structure
-            HP -= amount;
+            HP -= structureDamage;
             if (HP <= 0)
             {
                 HP = 0;
