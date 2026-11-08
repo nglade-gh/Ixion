@@ -45,7 +45,7 @@
     <homing>0</homing>
     <searchRadius>0</searchRadius>
     <color>255,140,200,255</color>
-    <rotation>180</rotation>
+    <rotation>90</rotation>
   </bullet>
   <bullet>
     <name>PlayerSpecial</name>
@@ -58,7 +58,7 @@
     <homing>0</homing>
     <searchRadius>0</searchRadius>
     <color>255,220,60,255</color>
-    <rotation>180</rotation>
+    <rotation>90</rotation>
   </bullet>
   <bullet>
     <name>EnemyBullet</name>

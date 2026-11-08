@@ -265,15 +265,8 @@ public class SetupScreen : GameScreen
         }
         AppConfig.Save();
 
-        // Feedback : bip court au volume de la catégorie ajustée
-        AudioCategory cat = index switch
-        {
-            0 => AudioCategory.Master,
-            1 => AudioCategory.Music,
-            2 => AudioCategory.Sfx,
-            _ => AudioCategory.Master
-        };
-        audio?.PlayPreviewTone(cat);
+        // Feedback : bip court au volume master
+        audio?.PlayPreviewTone();
     }
 
     private void AdjustDifficultySetting(int index, bool rightPressed, bool leftPressed)

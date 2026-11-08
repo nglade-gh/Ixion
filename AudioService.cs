@@ -1,24 +1,72 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Shooter;
 
+// ---------------------------------------------------------------
+// Sound definitions (serializable from sounds.xml)
+// ---------------------------------------------------------------
+
 /// <summary>
-/// Catégorie audio pour appliquer un volume spécifique.
+/// Une entrée individuelle de la configuration sonore.
 /// </summary>
-public enum AudioCategory { Master, Music, Sfx }
+[XmlRoot("sound", Namespace = "https://www.timc.fr/nicolas-glade/dotnet/shooter", IsNullable = false)]
+public class SoundEntry
+{
+    /// <summary>
+    /// Nom unique de référence (utilisé dans le code pour jouer le son).
+    /// </summary>
+    [XmlAttribute("name")]
+    public string Name { get; set; } = "";
+
+    /// <summary>
+    /// Nom du fichier .wav (sans le chemin).
+    /// </summary>
+    [XmlAttribute("file")]
+    public string File { get; set; } = "";
+
+    /// <summary>
+    /// Volume spécifique (0.0 à 1.0).
+    /// </summary>
+    [XmlAttribute("volume")]
+    public float Volume { get; set; } = 0.5f;
+
+    /// <summary>
+    /// Catégorie audio (Sfx ou Music).
+    /// </summary>
+    [XmlAttribute("category")]
+    public string Category { get; set; } = "Sfx";
+}
+
+/// <summary>
+/// Conteneur de la configuration sonore (racine XML : <sounds>).
+/// </summary>
+[XmlRoot("sounds", Namespace = "https://www.timc.fr/nicolas-glade/dotnet/shooter", IsNullable = false)]
+public class SoundsConfig
+{
+    [XmlElement("sound")]
+    public List<SoundEntry> Sounds { get; set; } = new();
+
+    public static implicit operator SoundsConfig(List<SoundEntry> s) => new() { Sounds = s };
+}
 
 /// <summary>
 /// Service centralisé de gestion audio.
 /// Gère la musique de fond et les effets sonores (SFX) avec volumes séparés.
+/// Charge les volumes depuis sounds.xml si disponible.
 /// </summary>
 public class AudioService
 {
     private readonly ContentManager _content;
+    private readonly Dictionary<string, SoundEntry> _soundMap = new();
     private Music _currentMusic;
     private float _masterVolume = 1.0f;
     private float _musicVolume = 0.6f;
@@ -29,7 +77,7 @@ public class AudioService
     private readonly Dictionary<string, SoundEffect> _sfxCache = new();
     // Pool de sons jouables simultanément (limite la polyphonie)
     private readonly Queue<SoundEffectInstance> _soundPool = new();
-    private const int MaxSimultaneousSounds = 8;
+    private const int MaxSimultaneousSounds = 16;
 
     /// <summary>
     /// Crée un nouveau service audio.
@@ -38,6 +86,52 @@ public class AudioService
     public AudioService(ContentManager content)
     {
         _content = content;
+    }
+
+    /// <summary>
+    /// Charge la carte des sons depuis GameConfig.Sounds.
+    /// Doit être appelé après le chargement de la configuration.
+    /// </summary>
+    public void LoadSoundConfig()
+    {
+        var cfg = GameConfig.Instance;
+        if (cfg.Sounds != null && cfg.Sounds.Sounds != null)
+        {
+            foreach (var entry in cfg.Sounds.Sounds)
+            {
+                if (!string.IsNullOrEmpty(entry.Name))
+                {
+                    _soundMap[entry.Name] = entry;
+                    Console.WriteLine($"  [AudioService] Son configuré: {entry.Name} (fichier={entry.File}, volume={entry.Volume}, category={entry.Category})");
+                }
+            }
+            Console.WriteLine($"  [AudioService] {cfg.Sounds.Sounds.Count} sons chargés depuis sounds.xml");
+        }
+        else
+        {
+            Console.WriteLine("[AudioService] Aucun son configuré dans sounds.xml");
+        }
+    }
+
+    /// <summary>
+    /// Récupère le volume configuré pour un son donné.
+    /// Retourne 0.5 par défaut si aucune configuration n'est trouvée.
+    /// </summary>
+    private float GetSoundVolume(string name)
+    {
+        if (_soundMap.TryGetValue(name, out var entry))
+            return Math.Clamp(entry.Volume, 0f, 1f);
+        return 0.5f; // volume par défaut
+    }
+
+    /// <summary>
+    /// Récupère la catégorie configurée pour un son donné.
+    /// </summary>
+    private string GetSoundCategory(string name)
+    {
+        if (_soundMap.TryGetValue(name, out var entry))
+            return entry.Category ?? "Sfx";
+        return "Sfx";
     }
 
     /// <summary>
@@ -65,19 +159,48 @@ public class AudioService
     }
 
     /// <summary>
-    /// Joue un effet sonore.
+    /// Joue un effet sonore avec la configuration du fichier sounds.xml.
+    /// Le nom du son est utilisé pour lookup le volume et la catégorie dans _soundMap.
     /// </summary>
-    /// <param name="path">Chemin de l'effet sonore.</param>
+    /// <param name="name">Nom du son configuré dans sounds.xml.</param>
     /// <param name="pitch">Modulation de pitch (-1 à 1, défaut 0).</param>
-    public void PlaySfx(string path, float pitch = 0f)
+    public void PlaySfx(string name, float pitch = 0f)
     {
         if (_isMuted) return;
+
+        // Déterminer le chemin du fichier et le volume
+        // MGCB compile les sons sans l'extension, donc on enlève l'extension du chemin
+        string filePath;
+        float volume;
+        if (_soundMap.TryGetValue(name, out var entry))
+        {
+            // Enlever l'extension du nom de fichier pour la clé de contenu MGCB
+            string fileName = System.IO.Path.GetFileNameWithoutExtension(entry.File);
+            filePath = $"sounds/{fileName}";
+            volume = entry.Volume;
+        }
+        else
+        {
+            // Fallback: utiliser le nom comme chemin directement
+            filePath = System.IO.Path.GetFileNameWithoutExtension(name);
+            volume = 0.5f; // volume par défaut
+        }
 
         SoundEffect sfx;
         lock (_sfxCache)
         {
-            if (!_sfxCache.TryGetValue(path, out sfx))
-                sfx = LoadSfx(path);
+            if (!_sfxCache.TryGetValue(filePath, out sfx))
+            {
+                try
+                {
+                    sfx = LoadSfx(filePath);
+                }
+                catch
+                {
+                    Console.WriteLine($"[AudioService] Son non trouvé: {filePath}");
+                    return;
+                }
+            }
         }
 
         if (sfx == null) return;
@@ -85,7 +208,24 @@ public class AudioService
         // Créer une nouvelle instance
         SoundEffectInstance instance = sfx.CreateInstance();
         instance.IsLooped = false;
-        instance.Volume = _sfxVolume * _masterVolume;
+        
+        // Déterminer la catégorie
+        string category = "Sfx";
+        if (_soundMap.TryGetValue(name, out var entry2))
+            category = entry2.Category ?? "Sfx";
+
+        // Calculer le volume final
+        float finalVolume = volume;
+        if (category == "Music")
+            finalVolume *= _musicVolume;
+        else // Sfx
+            finalVolume *= _sfxVolume;
+        
+        finalVolume *= (_isMuted ? 0f : _masterVolume);
+
+        if (finalVolume < 0.01f) return;
+
+        instance.Volume = finalVolume;
         instance.Pitch = pitch;
         instance.Play();
     }
@@ -208,11 +348,10 @@ public class AudioService
     }
 
     /// <summary>
-    /// Joue un court son de feedback (bip) au volume d'une catégorie donnée.
+    /// Joue un court son de feedback (bip) au volume master.
     /// Génère un ton sinusoïdal de 80ms via un buffer WAV temporaire.
     /// </summary>
-    /// <param name="category">Catégorie du son : Sfx, Music ou Master.</param>
-    public void PlayPreviewTone(AudioCategory category = AudioCategory.Master)
+    public void PlayPreviewTone()
     {
         if (_isMuted) return;
 
@@ -223,13 +362,7 @@ public class AudioService
         byte[] buffer = new byte[numSamples * 2]; // 16-bit = 2 bytes/sample
         float freq = 880f; // A5 - son aigu et distinctif
         float vol = 0.5f;
-
-        float effectiveVolume = category switch
-        {
-            AudioCategory.Sfx => _sfxVolume,
-            AudioCategory.Music => _musicVolume,
-            _ => _masterVolume
-        };
+        float effectiveVolume = _masterVolume;
 
         for (int i = 0; i < numSamples; i++)
         {

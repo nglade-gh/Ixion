@@ -1,13 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace Shooter;
+
+// ---------------------------------------------------------------
+// GameConfig
+// ---------------------------------------------------------------
 
 /// <summary>
 /// Singleton chargeant toutes les configurations XML du jeu.
@@ -48,6 +54,11 @@ public class GameConfig
     public BonusesConfig Bonuses { get; private set; }
 
     /// <summary>
+    /// Configuration des sons (effets sonores et volumes).
+    /// </summary>
+    public SoundsConfig Sounds { get; private set; }
+
+    /// <summary>
     /// Indique si la configuration a été chargée.
     /// </summary>
     public bool Loaded { get; private set; }
@@ -68,6 +79,7 @@ public class GameConfig
         Decors = Load<DecorsConfig>("decors.xml") ?? DefaultDecors();
         Bullets = Load<BulletsConfig>("bullets.xml") ?? DefaultBullets();
         Bonuses = Load<BonusesConfig>("bonuses.xml") ?? DefaultBonuses();
+        Sounds = Load<SoundsConfig>("sounds.xml");
         Loaded = true;
     }
 

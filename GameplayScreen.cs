@@ -159,12 +159,16 @@ public class GameplayScreen : GameScreen
             GameConfig.Instance.LoadAll();
             Console.WriteLine("  [GameplayScreen.LoadContent] LoadAll OK");
 
-            _font = _content.Load<SpriteFont>("Roman15");
-            Console.WriteLine("  [GameplayScreen.LoadContent] Font OK");
-
             // Connecter le service audio
             _audio = ScreenManager._Instance.Audio;
             Console.WriteLine("  [GameplayScreen.LoadContent] Audio connecté");
+
+            // Charger la configuration sonore après le chargement de GameConfig
+            _audio?.LoadSoundConfig();
+            Console.WriteLine("  [GameplayScreen.LoadContent] Audio config loaded");
+
+            _font = _content.Load<SpriteFont>("Roman15");
+            Console.WriteLine("  [GameplayScreen.LoadContent] Font OK");
 
             var cfg = GameConfig.Instance;
             _playerTexture = _content.Load<Texture2D>(GameConfig.ContentKey(cfg.Entities.Player.Texture));
@@ -204,6 +208,7 @@ public class GameplayScreen : GameScreen
             }
 
             _particleTexture = Sprite.CreateDotTexture(ScreenManager._Instance._graphicsDevice, 4, Color.White);
+            Bonus.Initialize(ScreenManager._Instance._graphicsDevice);
             _decor = new DecorManager(cfg.Decors, ScreenManager._Instance._Dimensions, _random);
             _decor.Initialize(_content, ScreenManager._Instance._graphicsDevice);
             Console.WriteLine("  [GameplayScreen.LoadContent] Decor OK");
@@ -392,6 +397,7 @@ public class GameplayScreen : GameScreen
                         _player.Position.Y - _player.Size.Y * _player.Scale / 2f);
                     _playerBullets.Add(new Bullet(bpClone, _bulletTextures[GameConfig.ContentKey(bp.Texture)],
                         spawnPos, dir * bp.Speed, null));
+                    if (_audio != null) _audio.PlaySfx("laser_fire");
                 }
             }
             else if (_diagonalShotActive)
@@ -399,23 +405,25 @@ public class GameplayScreen : GameScreen
                 // Add diagonal shots in addition to straight shot
                 _playerBullets.Add(new Bullet(bp, _bulletTextures[GameConfig.ContentKey(bp.Texture)],
                     pos, new Vector2(0f, -bp.Speed), null));
-                if (_audio != null) _audio.PlaySfx("sounds/laser_fire");
+                if (_audio != null) _audio.PlaySfx("laser_fire");
 
                 // Left diagonal
                 Vector2 diagLeft = new Vector2(-0.5f, -0.866f);
                 _playerBullets.Add(new Bullet(bp, _bulletTextures[GameConfig.ContentKey(bp.Texture)],
                     new Vector2(pos.X - 5f, pos.Y), diagLeft * bp.Speed, null));
+                if (_audio != null) _audio.PlaySfx("laser_fire");
+
                 // Right diagonal
                 Vector2 diagRight = new Vector2(0.5f, -0.866f);
                 _playerBullets.Add(new Bullet(bp, _bulletTextures[GameConfig.ContentKey(bp.Texture)],
                     new Vector2(pos.X + 5f, pos.Y), diagRight * bp.Speed, null));
-                if (_audio != null) _audio.PlaySfx("sounds/laser_fire");
+                if (_audio != null) _audio.PlaySfx("laser_fire");
             }
             else
             {
                 _playerBullets.Add(new Bullet(bp, _bulletTextures[GameConfig.ContentKey(bp.Texture)],
                     pos, new Vector2(0f, -bp.Speed), null));
-                if (_audio != null) _audio.PlaySfx("sounds/laser_fire");
+                if (_audio != null) _audio.PlaySfx("laser_fire");
             }
         }
 
@@ -465,6 +473,7 @@ public class GameplayScreen : GameScreen
             }
             _playerBullets.Add(new Bullet(bp, _bulletTextures[GameConfig.ContentKey(bp.Texture)],
                 pos, new Vector2(0f, -bp.Speed), null));
+            if (_audio != null) _audio.PlaySfx("plasma_fire");
         }
 
         if (InputService.Instance.IsActionHeld("FireSpecial") && _player.TryFireSpecial())
@@ -475,6 +484,7 @@ public class GameplayScreen : GameScreen
                 _player.Position.Y - _player.Size.Y * _player.Scale / 2f);
             _playerBullets.Add(new Bullet(bp, _bulletTextures[GameConfig.ContentKey(bp.Texture)],
                 pos, new Vector2(0f, -bp.Speed), null));
+            if (_audio != null) _audio.PlaySfx("special_fire");
         }
 
         // Bullets
@@ -691,10 +701,12 @@ public class GameplayScreen : GameScreen
                 if (enemy.Speed < 50f || enemy.Size.X > 50f)
                 {
                     SpawnEnemyBullet(cfg.GetBullet("EnemyLaser"), muzzle, new Vector2(0f, 1f));
+                    if (_audio != null) _audio.PlaySfx("enemy_laser");
                 }
                 else
                 {
                     SpawnEnemyBullet(cfg.GetBullet("EnemyBullet"), muzzle, new Vector2(0f, 1f));
+                    if (_audio != null) _audio.PlaySfx("enemy_bullet");
                 }
                 break;
             case BulletPattern.Burst:
@@ -704,11 +716,12 @@ public class GameplayScreen : GameScreen
                     Vector2 dir = new Vector2((float)Math.Sin(angle), (float)Math.Cos(angle));
                     SpawnEnemyBullet(cfg.GetBullet(burstBullet), muzzle, dir);
                 }
+                if (_audio != null) _audio.PlaySfx("enemy_laser");
                 break;
             case BulletPattern.Homing:
                 Vector2 toPlayer = _player.Position - muzzle;
                 SpawnEnemyBullet(cfg.GetBullet("EnemyHoming"), muzzle, Vector2.Normalize(toPlayer), _player);
-                if (_audio != null) _audio.PlaySfx("sounds/missile_launch");
+                if (_audio != null) _audio.PlaySfx("enemy_homing");
                 break;
             case BulletPattern.Swarm:
                 // 2-3 petits tirs rapides en diagonale + 1 droit
@@ -720,6 +733,7 @@ public class GameplayScreen : GameScreen
                     string bulletName = i == 0 ? "SwarmBullet" : (_random.Next(2) == 0 ? "SwarmDiagLeft" : "SwarmDiagRight");
                     SpawnEnemyBullet(cfg.GetBullet(bulletName), muzzle, dir);
                 }
+                if (_audio != null) _audio.PlaySfx("swarm_fire");
                 break;
             case BulletPattern.Spread:
                 // 3 tirs en éventail (gauche, centre, droite)
@@ -728,6 +742,7 @@ public class GameplayScreen : GameScreen
                     Vector2 dir = new Vector2((float)Math.Sin(angle), (float)Math.Cos(angle));
                     SpawnEnemyBullet(cfg.GetBullet("TripleSpread"), muzzle, dir);
                 }
+                if (_audio != null) _audio.PlaySfx("enemy_bullet");
                 break;
             case BulletPattern.Spiral:
                 // 1 tir qui tourne progressivement (3 angles)
@@ -737,6 +752,7 @@ public class GameplayScreen : GameScreen
                     Vector2 dir = new Vector2((float)Math.Sin(angle), (float)Math.Cos(angle));
                     SpawnEnemyBullet(cfg.GetBullet("SpiralBullet"), muzzle, dir);
                 }
+                if (_audio != null) _audio.PlaySfx("enemy_bullet");
                 break;
         }
     }
@@ -780,12 +796,12 @@ public class GameplayScreen : GameScreen
                         _player.Score += enemy.ScoreValue;
                         SpawnExplosion(enemy.Position, "Explosion_Vaisseau_Petit", 1f);
                         SpawnBonus(enemy.Position, enemy.Size.X);
-                        if (_audio != null) _audio.PlaySfx("sounds/explosion");
+                        if (_audio != null) _audio.PlaySfx("explosion");
                     }
                     else
                     {
                         SpawnExplosion(bullet.Position, "PetiteExplosion_Decor", 0.6f);
-                        if (_audio != null) _audio.PlaySfx("sounds/explosion");
+                        if (_audio != null) _audio.PlaySfx("impact_laser");
                     }
                     break;
                 }
@@ -807,7 +823,7 @@ public class GameplayScreen : GameScreen
                     {
                         SpawnExplosion(missile.Position, "PetiteExplosion_Missile", 1f);
                         _player.Score += 5;
-                        if (_audio != null) _audio.PlaySfx("sounds/explosion");
+                        if (_audio != null) _audio.PlaySfx("explosion_missile");
                     }
                     break;
                 }
@@ -826,12 +842,12 @@ public class GameplayScreen : GameScreen
             {
                 bullet.IsActive = false;
                 _player.TakeDamage(10);
-                if (_audio != null) _audio.PlaySfx("sounds/shield_hit");
+                if (_audio != null) _audio.PlaySfx("shield_hit");
                 if (!_player.IsActive)
                 {
                     _gameOver = true;
                     _gameOverTimer = 0f;
-                    if (_audio != null) _audio.PlaySfx("sounds/player_death");
+                    if (_audio != null) _audio.PlaySfx("player_death");
                 }
                 break;
             }
@@ -845,12 +861,12 @@ public class GameplayScreen : GameScreen
                 enemy.IsActive = false;
                 SpawnExplosion(enemy.Position, "Explosion_Vaisseau_Gros", 1f);
                 _player.TakeDamage(20);
-                if (_audio != null) _audio.PlaySfx("sounds/explosion");
+                if (_audio != null) _audio.PlaySfx("explosion_large");
                 if (!_player.IsActive)
                 {
                     _gameOver = true;
                     _gameOverTimer = 0f;
-                    if (_audio != null) _audio.PlaySfx("sounds/player_death");
+                    if (_audio != null) _audio.PlaySfx("player_death");
                 }
                 break;
             }
@@ -871,7 +887,7 @@ public class GameplayScreen : GameScreen
             {
                 bonus.IsActive = false;
                 ApplyBonus(bonus);
-                if (_audio != null) _audio.PlaySfx("sounds/bonus_pickup");
+                if (_audio != null) _audio.PlaySfx("bonus_pickup");
             }
         }
     }

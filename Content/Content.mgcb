@@ -274,5 +274,19 @@
     <Item type="SourceFile" source="sounds/player_death.wav" processor="SoundEffectProcessor" processorParam="ReduceToMono|true" build="Content/sounds/player_death.xnb" />
     <Item type="SourceFile" source="sounds/bonus_pickup.wav" processor="SoundEffectProcessor" processorParam="ReduceToMono|true" build="Content/sounds/bonus_pickup.xnb" />
     <Item type="SourceFile" source="sounds/wave_complete.wav" processor="SoundEffectProcessor" processorParam="ReduceToMono|true" build="Content/sounds/wave_complete.xnb" />
+    <Item type="SourceFile" source="sounds/laser_fire.wav" processor="SoundEffectProcessor" processorParam="ReduceToMono|true" build="Content/sounds/laser_fire.xnb" />
+    <Item type="SourceFile" source="sounds/plasma_fire.wav" processor="SoundEffectProcessor" processorParam="ReduceToMono|true" build="Content/sounds/plasma_fire.xnb" />
+    <Item type="SourceFile" source="sounds/special_fire.wav" processor="SoundEffectProcessor" processorParam="ReduceToMono|true" build="Content/sounds/special_fire.xnb" />
+    <Item type="SourceFile" source="sounds/enemy_bullet.wav" processor="SoundEffectProcessor" processorParam="ReduceToMono|true" build="Content/sounds/enemy_bullet.xnb" />
+    <Item type="SourceFile" source="sounds/enemy_homing.wav" processor="SoundEffectProcessor" processorParam="ReduceToMono|true" build="Content/sounds/enemy_homing.xnb" />
+    <Item type="SourceFile" source="sounds/enemy_laser.wav" processor="SoundEffectProcessor" processorParam="ReduceToMono|true" build="Content/sounds/enemy_laser.xnb" />
+    <Item type="SourceFile" source="sounds/swarm_fire.wav" processor="SoundEffectProcessor" processorParam="ReduceToMono|true" build="Content/sounds/swarm_fire.xnb" />
+    <Item type="SourceFile" source="sounds/impact_impulse.wav" processor="SoundEffectProcessor" processorParam="ReduceToMono|true" build="Content/sounds/impact_impulse.xnb" />
+    <Item type="SourceFile" source="sounds/impact_homing.wav" processor="SoundEffectProcessor" processorParam="ReduceToMono|true" build="Content/sounds/impact_homing.xnb" />
+    <Item type="SourceFile" source="sounds/impact_laser.wav" processor="SoundEffectProcessor" processorParam="ReduceToMono|true" build="Content/sounds/impact_laser.xnb" />
+    <Item type="SourceFile" source="sounds/explosion_small.wav" processor="SoundEffectProcessor" processorParam="ReduceToMono|true" build="Content/sounds/explosion_small.xnb" />
+    <Item type="SourceFile" source="sounds/explosion_large.wav" processor="SoundEffectProcessor" processorParam="ReduceToMono|true" build="Content/sounds/explosion_large.xnb" />
+    <Item type="SourceFile" source="sounds/explosion_missile.wav" processor="SoundEffectProcessor" processorParam="ReduceToMono|true" build="Content/sounds/explosion_missile.xnb" />
+    <Item type="SourceFile" source="sounds/explosion_virus.wav" processor="SoundEffectProcessor" processorParam="ReduceToMono|true" build="Content/sounds/explosion_virus.xnb" />
   </Items>
 </mgcb:ContentPipelineProject>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Définitions des effets sonores.
+     Chaque entry référence un fichier .wav dans le répertoire Content/sounds/
+     et un attribut volume (0.0 à 1.0).
+     Namespace: https://www.timc.fr/nicolas-glade/dotnet/shooter -->
+<sounds xmlns="https://www.timc.fr/nicolas-glade/dotnet/shooter"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://www.timc.fr/nicolas-glade/dotnet/shooter shooter-config.xsd">
+
+  <!-- Tir joueur principal (laser) -->
+  <sound name="laser_fire"        file="laser_fire.wav"        volume="0.6" category="Sfx" />
+
+  <!-- Tir secondaire (plasma) -->
+  <sound name="plasma_fire"       file="plasma_fire.wav"       volume="0.7" category="Sfx" />
+
+  <!-- Tir spécial (missile lourd) -->
+  <sound name="special_fire"      file="special_fire.wav"      volume="0.8" category="Sfx" />
+
+  <!-- Tirs ennemis -->
+  <sound name="enemy_bullet"      file="enemy_bullet.wav"      volume="0.4" category="Sfx" />
+  <sound name="enemy_homing"      file="enemy_homing.wav"      volume="0.5" category="Sfx" />
+  <sound name="enemy_laser"       file="enemy_laser.wav"       volume="0.4" category="Sfx" />
+  <sound name="swarm_fire"        file="swarm_fire.wav"        volume="0.3" category="Sfx" />
+
+  <!-- Impacts sur les projectiles -->
+  <sound name="impact_impulse"    file="impact_impulse.wav"    volume="0.4" category="Sfx" />
+  <sound name="impact_homing"     file="impact_homing.wav"     volume="0.5" category="Sfx" />
+  <sound name="impact_laser"      file="impact_laser.wav"      volume="0.3" category="Sfx" />
+
+  <!-- Explosions -->
+  <sound name="explosion"         file="explosion_small.wav"   volume="0.6" category="Sfx" />
+  <sound name="explosion_large"   file="explosion_large.wav"   volume="0.8" category="Sfx" />
+  <sound name="explosion_missile" file="explosion_missile.wav" volume="0.6" category="Sfx" />
+  <sound name="explosion_virus"   file="explosion_virus.wav"   volume="0.9" category="Sfx" />
+
+  <!-- Récupération bonus -->
+  <sound name="bonus_pickup"      file="bonus_pickup.wav"      volume="0.7" category="Sfx" />
+
+  <!-- Fin de vague -->
+  <sound name="wave_complete"     file="wave_complete.wav"     volume="0.7" category="Sfx" />
+
+  <!-- Mort du joueur -->
+  <sound name="player_death"      file="player_death.wav"      volume="0.8" category="Sfx" />
+
+  <!-- Bouclier touché -->
+  <sound name="shield_hit"        file="shield_hit.wav"        volume="0.5" category="Sfx" />
+
+  <!-- Musique de fond -->
+  <sound name="bgm_loop"          file="bgm_loop.wav"          volume="0.3" category="Music" />
+
+</sounds>

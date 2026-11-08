@@ -29,6 +29,8 @@ rsync -P -avz \
     --exclude='.git/' \
     --exclude='*.csproj.user' \
     --exclude='*.suo' \
+    --exclude='sync_shooter_from_chouette.sh' \
+    --exclude='build_and_run.sh' \
     "$RSYNC_SRC" "$RSYNC_DST"
 
 status=$?
