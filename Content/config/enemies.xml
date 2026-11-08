@@ -9,6 +9,17 @@
 <enemies xmlns="https://www.timc.fr/nicolas-glade/dotnet/shooter"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="https://www.timc.fr/nicolas-glade/dotnet/shooter shooter-config.xsd">
+  <!-- Ennemi de base : valeurs de repli communes à tous les archetypes. -->
+  <baseEnemy>
+    <name>Enemy</name>
+    <texture>pics/enemies/virus1</texture>
+    <scale>1.0</scale>
+    <maxHp>30</maxHp>
+    <regenRate>0</regenRate>
+    <fireRate>1.5</fireRate>
+    <speed>70</speed>
+    <scoreValue>10</scoreValue>
+  </baseEnemy>
   <enemyType>
     <name>Scout</name>
     <texture>pics/enemies/virus1</texture>
@@ -23,6 +34,7 @@
     <frequency>1.6</frequency>
     <bulletPattern>simple</bulletPattern>
     <color>255,230,160</color>
+    <rotation>0</rotation>
     <unlockThreshold>1</unlockThreshold>
   </enemyType>
   <enemyType>
@@ -39,6 +51,7 @@
     <frequency>1.2</frequency>
     <bulletPattern>burst</bulletPattern>
     <color>255,255,255</color>
+    <rotation>0</rotation>
     <unlockThreshold>1</unlockThreshold>
   </enemyType>
   <enemyType>
@@ -56,6 +69,7 @@
     <frequency>0.4</frequency>
     <bulletPattern>burst</bulletPattern>
     <color>255,120,120</color>
+    <rotation>0</rotation>
     <unlockThreshold>1</unlockThreshold>
   </enemyType>
   <enemyType>
@@ -73,6 +87,7 @@
     <frequency>2.2</frequency>
     <bulletPattern>simple</bulletPattern>
     <color>170,255,170</color>
+    <rotation>0</rotation>
     <unlockThreshold>1</unlockThreshold>
   </enemyType>
   <enemyType>
@@ -90,6 +105,7 @@
     <frequency>0</frequency>
     <bulletPattern>homing</bulletPattern>
     <color>255,90,60</color>
+    <rotation>0</rotation>
     <unlockThreshold>1</unlockThreshold>
   </enemyType>
   <enemyType>
@@ -106,6 +122,7 @@
     <frequency>1.4</frequency>
     <bulletPattern>burst</bulletPattern>
     <color>120,220,120</color>
+    <rotation>0</rotation>
     <unlockThreshold>3</unlockThreshold>
   </enemyType>
   <enemyType>
@@ -122,6 +139,7 @@
     <frequency>0.5</frequency>
     <bulletPattern>burst</bulletPattern>
     <color>200,160,255</color>
+    <rotation>0</rotation>
     <unlockThreshold>3</unlockThreshold>
   </enemyType>
   <enemyType>
@@ -138,6 +156,7 @@
     <frequency>2.0</frequency>
     <bulletPattern>simple</bulletPattern>
     <color>255,180,120</color>
+    <rotation>0</rotation>
     <unlockThreshold>3</unlockThreshold>
   </enemyType>
   <enemyType>
@@ -154,6 +173,7 @@
     <frequency>1.0</frequency>
     <bulletPattern>burst</bulletPattern>
     <color>220,220,255</color>
+    <rotation>0</rotation>
     <unlockThreshold>5</unlockThreshold>
   </enemyType>
   <!-- Swarm: small, fast, numerous, fires in spread pattern -->
@@ -171,6 +191,7 @@
     <frequency>2.5</frequency>
     <bulletPattern>swarm</bulletPattern>
     <color>255,255,180</color>
+    <rotation>0</rotation>
     <unlockThreshold>5</unlockThreshold>
   </enemyType>
   <!-- Spread: medium enemy that fires 3-way spread -->
@@ -188,6 +209,7 @@
     <frequency>1.8</frequency>
     <bulletPattern>spread</bulletPattern>
     <color>255,180,255</color>
+    <rotation>0</rotation>
     <unlockThreshold>5</unlockThreshold>
   </enemyType>
   <!-- Spiral: rotating enemy that fires in spiral -->
@@ -205,6 +227,7 @@
     <frequency>1.5</frequency>
     <bulletPattern>spiral</bulletPattern>
     <color>180,255,220</color>
+    <rotation>0</rotation>
     <unlockThreshold>5</unlockThreshold>
   </enemyType>
   <!-- Boss: very large, fires energy beams -->
@@ -222,6 +245,7 @@
     <frequency>0.6</frequency>
     <bulletPattern>burst</bulletPattern>
     <color>255,100,100</color>
+    <rotation>0</rotation>
     <unlockThreshold>7</unlockThreshold>
   </enemyType>
   <!-- ============ SpacePack additions (pics/space) ============ -->
@@ -240,6 +264,7 @@
     <frequency>0.4</frequency>
     <bulletPattern>burst</bulletPattern>
     <color>160,140,220</color>
+    <rotation>0</rotation>
     <unlockThreshold>5</unlockThreshold>
   </enemyType>
   <enemyType>
@@ -256,6 +281,7 @@
     <frequency>1.1</frequency>
     <bulletPattern>simple</bulletPattern>
     <color>180,210,255</color>
+    <rotation>0</rotation>
     <unlockThreshold>3</unlockThreshold>
   </enemyType>
   <!-- Spikeballs: drifting mine (zigzag) + shrinking charger -->
@@ -273,6 +299,7 @@
     <frequency>1.9</frequency>
     <bulletPattern>simple</bulletPattern>
     <color>255,150,90</color>
+    <rotation>0</rotation>
     <unlockThreshold>3</unlockThreshold>
   </enemyType>
   <enemyType>
@@ -289,6 +316,7 @@
     <frequency>0</frequency>
     <bulletPattern>simple</bulletPattern>
     <color>255,210,130</color>
+    <rotation>0</rotation>
     <unlockThreshold>5</unlockThreshold>
   </enemyType>
   <!-- Ships: medium cruiser (burst) + fast spread-firing interceptor -->
@@ -306,6 +334,7 @@
     <frequency>1.0</frequency>
     <bulletPattern>burst</bulletPattern>
     <color>210,220,255</color>
+    <rotation>0</rotation>
     <unlockThreshold>5</unlockThreshold>
   </enemyType>
   <enemyType>
@@ -322,6 +351,7 @@
     <frequency>1.8</frequency>
     <bulletPattern>spread</bulletPattern>
     <color>255,220,180</color>
+    <rotation>0</rotation>
     <unlockThreshold>7</unlockThreshold>
   </enemyType>
   <!-- Asteroids: drifting rocks, no fire (fireRate = 0) -->
@@ -339,6 +369,7 @@
     <frequency>1.6</frequency>
     <bulletPattern>simple</bulletPattern>
     <color>175,160,145</color>
+    <rotation>0</rotation>
     <unlockThreshold>1</unlockThreshold>
   </enemyType>
   <enemyType>
@@ -355,6 +386,7 @@
     <frequency>0.8</frequency>
     <bulletPattern>simple</bulletPattern>
     <color>200,185,165</color>
+    <rotation>0</rotation>
     <unlockThreshold>1</unlockThreshold>
   </enemyType>
   <enemyType>
@@ -371,6 +403,7 @@
     <frequency>1.2</frequency>
     <bulletPattern>simple</bulletPattern>
     <color>185,165,150</color>
+    <rotation>0</rotation>
     <unlockThreshold>3</unlockThreshold>
   </enemyType>
   <enemyType>
@@ -387,6 +420,7 @@
     <frequency>0.5</frequency>
     <bulletPattern>simple</bulletPattern>
     <color>205,190,170</color>
+    <rotation>0</rotation>
     <unlockThreshold>5</unlockThreshold>
   </enemyType>
   <enemyType>
@@ -403,6 +437,7 @@
     <frequency>0.5</frequency>
     <bulletPattern>simple</bulletPattern>
     <color>220,205,185</color>
+    <rotation>0</rotation>
     <unlockThreshold>7</unlockThreshold>
   </enemyType>
 </enemies>

@@ -73,30 +73,6 @@ public static class XmlConfig
 }
 
 /// <summary>
-/// Une entrée de la configuration des textures (textures.xml).
-/// Mappe le nom d'une entité (joueur ou ennemi) vers une texture alternative.
-/// </summary>
-public class TextureOverride
-{
-    /// <summary>
-    /// Nom de l'entité concernée (ex. "Player", "Scout", "EvilEye").
-    /// </summary>
-    [XmlAttribute("name")] public string Name { get; set; } = "";
-
-    /// <summary>
-    /// Chemin de la texture alternative (sans extension, dans Content/pics/).
-    /// </summary>
-    [XmlAttribute("texture")] public string Texture { get; set; } = "";
-
-    /// <summary>
-    /// Sous-rectangle optionnel "x,y,w,h" pour les textures en feuille de sprites.
-    /// </summary>
-    [XmlAttribute("sourceRect")] public string SourceRectRaw { get; set; }
-
-    [XmlIgnore] public Rectangle? SourceRect => XmlConfig.ParseSourceRect(SourceRectRaw);
-}
-
-/// <summary>
 /// Paramètres de base communs à toutes les entités du jeu.
 /// </summary>
 public class EntityParams
@@ -175,8 +151,9 @@ public class PlayerParams : EntityParams
 
 /// <summary>
 /// Paramètres de base d'un ennemi (éléments communs).
+/// Chargé depuis l'élément &lt;baseEnemy&gt; de enemies.xml.
 /// </summary>
-public class EnemyParams : EntityParams
+public class BaseEnemyParams : EntityParams
 {
     /// <summary>
     /// Vitesse de déplacement, en px/s.
@@ -192,7 +169,7 @@ public class EnemyParams : EntityParams
 /// <summary>
 /// Archetype d'ennemi concret. Chargé depuis enemies.xml.
 /// </summary>
-public class EnemyType : EnemyParams
+public class EnemyType : BaseEnemyParams
 {
     /// <summary>Logical size on screen, in pixels (assets downscaled by ~4-5x).</summary>
     [XmlElement("size")] public int Size { get; set; } = 46;
@@ -206,6 +183,8 @@ public class EnemyType : EnemyParams
     [XmlElement("sourceRect")] public string SourceRectRaw { get; set; }
     /// <summary>Numéro de vague à partir duquel cet ennemi peut apparaître (difficulté progressive).</summary>
     [XmlElement("unlockThreshold")] public int UnlockThreshold { get; set; } = 1;
+    /// <summary>Rotation initiale du sprite, en degrés.</summary>
+    [XmlElement("rotation")] public float Rotation { get; set; }
 
     [XmlIgnore] public MovePattern MovePattern => XmlConfig.ParseEnum(MovePatternRaw, MovePattern.Sine);
     [XmlIgnore] public BulletPattern BulletPattern => XmlConfig.ParseEnum(BulletPatternRaw, BulletPattern.Simple);
@@ -230,6 +209,7 @@ public class DecorParams
     [XmlElement("minScale")] public float MinScale { get; set; }
     [XmlElement("maxScale")] public float MaxScale { get; set; }
     [XmlElement("color")] public string ColorRaw { get; set; }
+    [XmlElement("rotation")] public float Rotation { get; set; }
 
     [XmlIgnore] public bool IsParallax => IsParallaxRaw != 0;
     [XmlIgnore] public Color Color => XmlConfig.ParseColor(ColorRaw, Color.White);
@@ -283,6 +263,7 @@ public class BonusParams
     [XmlElement("speed")] public float Speed { get; set; } = 80f;
     [XmlElement("color")] public string ColorRaw { get; set; }
     [XmlElement("amount")] public int Amount { get; set; } = 1;
+    [XmlElement("rotation")] public float Rotation { get; set; }
     [XmlIgnore] public Color Color => XmlConfig.ParseColor(ColorRaw, Color.Yellow);
 }
 
@@ -290,16 +271,15 @@ public class BonusParams
 // Root documents
 // ---------------------------------------------------------------------------
 
-[XmlRoot("entities")]
-public class EntitiesConfig
+[XmlRoot("player")]
+public class PlayerConfig : PlayerParams
 {
-    [XmlElement("player")] public PlayerParams Player { get; set; }
-    [XmlElement("enemy")] public EnemyParams Enemy { get; set; }
 }
 
 [XmlRoot("enemies")]
 public class EnemiesConfig
 {
+    [XmlElement("baseEnemy")] public BaseEnemyParams BaseEnemy { get; set; }
     [XmlElement("enemyType")] public List<EnemyType> EnemyTypes { get; set; } = new();
 }
 
@@ -320,39 +300,4 @@ public class BulletsConfig
 public class BonusesConfig
 {
     [XmlElement("bonus")] public List<BonusParams> Bonuses { get; set; } = new();
-}
-
-[XmlRoot("textures")]
-public class TextureConfig
-{
-    [XmlElement("textureOverride")] public List<TextureOverride> Overrides { get; set; } = new();
-
-    /// <summary>
-    /// Recherche l'override de texture pour une entité par nom (insensible à la casse).
-    /// </summary>
-    /// <param name="name">Nom de l'entité (joueur ou ennemi).</param>
-    /// <returns>Override trouvé, ou null si aucun.</returns>
-    public TextureOverride GetOverride(string name)
-    {
-        if (string.IsNullOrEmpty(name))
-            return null;
-        foreach (var o in Overrides)
-            if (!string.IsNullOrEmpty(o.Texture) &&
-                string.Equals(o.Name, name, StringComparison.OrdinalIgnoreCase))
-                return o;
-        return null;
-    }
-
-    /// <summary>
-    /// Résout le chemin de texture effectif pour une entité :
-    /// l'override de textures.xml si défini, sinon le chemin par défaut.
-    /// </summary>
-    /// <param name="name">Nom de l'entité.</param>
-    /// <param name="fallbackPath">Chemin de texture par défaut.</param>
-    /// <returns>Chemin de texture à utiliser.</returns>
-    public string ResolveTexture(string name, string fallbackPath)
-    {
-        var o = GetOverride(name);
-        return o != null ? o.Texture : fallbackPath;
-    }
 }

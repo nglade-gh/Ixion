@@ -29,9 +29,9 @@ public class GameConfig
     public static GameConfig Instance => _instance ??= new GameConfig();
 
     /// <summary>
-    /// Configuration des entités (joueur, ennemi de base).
+    /// Configuration du joueur (player.xml).
     /// </summary>
-    public EntitiesConfig Entities { get; private set; }
+    public PlayerConfig Player { get; private set; }
 
     /// <summary>
     /// Configuration des types d'ennemis.
@@ -59,11 +59,6 @@ public class GameConfig
     public SoundsConfig Sounds { get; private set; }
 
     /// <summary>
-    /// Configuration des overrides de textures (joueur, ennemis).
-    /// </summary>
-    public TextureConfig Textures { get; private set; }
-
-    /// <summary>
     /// Indique si la configuration a été chargée.
     /// </summary>
     public bool Loaded { get; private set; }
@@ -79,13 +74,12 @@ public class GameConfig
     {
         if (Loaded)
             return;
-        Entities = Load<EntitiesConfig>("entities.xml") ?? DefaultEntities();
+        Player = Load<PlayerConfig>("player.xml") ?? DefaultPlayer();
         Enemies = Load<EnemiesConfig>("enemies.xml") ?? DefaultEnemies();
         Decors = Load<DecorsConfig>("decors.xml") ?? DefaultDecors();
         Bullets = Load<BulletsConfig>("bullets.xml") ?? DefaultBullets();
         Bonuses = Load<BonusesConfig>("bonuses.xml") ?? DefaultBonuses();
         Sounds = Load<SoundsConfig>("sounds.xml");
-        Textures = Load<TextureConfig>("textures.xml") ?? new TextureConfig();
         Loaded = true;
     }
 
@@ -174,22 +168,23 @@ public class GameConfig
     // Built-in fallbacks (mirror the XML defaults)
     // -----------------------------------------------------------------
 
-    private static EntitiesConfig DefaultEntities() => new()
+    private static PlayerConfig DefaultPlayer() => new()
     {
-        Player = new PlayerParams
-        {
-            Name = "Player",
-            Texture = "pics/ships/ship1",
-            Width = 34,
-            Height = 48,
-            MaxHp = 100,
-            RegenRate = 4f,
-            FireRate = 0.16f,
-            MaxSpeed = 340f,
-            Lives = 3,
-            InvincibilityDuration = 2f
-        },
-        Enemy = new EnemyParams
+        Name = "Player",
+        Texture = "pics/ships/ship1",
+        Width = 34,
+        Height = 48,
+        MaxHp = 100,
+        RegenRate = 4f,
+        FireRate = 0.16f,
+        MaxSpeed = 340f,
+        Lives = 3,
+        InvincibilityDuration = 2f
+    };
+
+    private static EnemiesConfig DefaultEnemies() => new()
+    {
+        BaseEnemy = new BaseEnemyParams
         {
             Name = "Enemy",
             Texture = "pics/enemies/virus1",
@@ -197,11 +192,7 @@ public class GameConfig
             FireRate = 1.5f,
             Speed = 70f,
             ScoreValue = 10
-        }
-    };
-
-    private static EnemiesConfig DefaultEnemies() => new()
-    {
+        },
         EnemyTypes = new List<EnemyType>
         {
             new()

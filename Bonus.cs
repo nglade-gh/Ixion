@@ -33,6 +33,7 @@ public class Bonus : Sprite
         Params = p;
         Scale = 1f;
         Color = p.Color;
+        Rotation = p.Rotation;
     }
 
     /// <summary>

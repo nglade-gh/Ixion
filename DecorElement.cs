@@ -46,6 +46,7 @@ public class DecorElement : Decors
         Color = color;
         ScrollSpeed = p.ScrollSpeed;
         Layer = p.Layer;
+        Rotation = p.Rotation;
         IsParallax = p.IsParallax;
         _screenHeight = screenHeight;
         _recycleSpan = recycleSpan;

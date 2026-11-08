@@ -172,8 +172,8 @@ public class GameplayScreen : GameScreen
 
             var cfg = GameConfig.Instance;
 
-            // Overrides de textures (textures.xml) : le joueur peut utiliser une texture alternative
-            string playerTex = cfg.Textures.ResolveTexture(cfg.Entities.Player.Name, cfg.Entities.Player.Texture);
+            // Texture du joueur (définie dans player.xml)
+            string playerTex = cfg.Player.Texture;
             _playerTexture = _content.Load<Texture2D>(GameConfig.ContentKey(playerTex));
             Console.WriteLine($"  [GameplayScreen.LoadContent] Player tex OK ({playerTex})");
 
@@ -195,7 +195,7 @@ public class GameplayScreen : GameScreen
             Console.WriteLine($"  [GameplayScreen.LoadContent] Explosions: {_explosionFrames.Count} types");
 
             foreach (var type in cfg.Enemies.EnemyTypes)
-                LoadTextureOnce(_enemyTextures, cfg.Textures.ResolveTexture(type.Name, type.Texture));
+                LoadTextureOnce(_enemyTextures, type.Texture);
             foreach (var bullet in cfg.Bullets.Bullets)
                 LoadTextureOnce(_bulletTextures, bullet.Texture);
             Console.WriteLine($"  [GameplayScreen.LoadContent] Enemies: {_enemyTextures.Count} Bullets: {_bulletTextures.Count}");
@@ -283,7 +283,7 @@ public class GameplayScreen : GameScreen
             ScreenManager._Instance._Dimensions.X / 2f,
             ScreenManager._Instance._Dimensions.Y - 100f);
 
-        _player = new Player(cfg.Entities.Player, _playerTexture, spawn);
+        _player = new Player(cfg.Player, _playerTexture, spawn);
         _player.Shield = _shield;
         _player.SetPlayArea(_decor.PlayArea);
         _shield.Intensity = 1f;
@@ -633,11 +633,8 @@ public class GameplayScreen : GameScreen
     /// <returns>Ennemi cree.</returns>
     private Enemy CreateEnemy(EnemyType type, Vector2 position)
     {
-        var cfg = GameConfig.Instance;
-        // Resolver l'eventuelle override de texture (textures.xml) pour cet ennemi
-        string texPath = cfg.Textures.ResolveTexture(type.Name, type.Texture);
-        Texture2D tex = _enemyTextures[GameConfig.ContentKey(texPath)];
-        Rectangle? sourceRect = type.SourceRect ?? cfg.Textures.GetOverride(type.Name)?.SourceRect;
+        Texture2D tex = _enemyTextures[GameConfig.ContentKey(type.Texture)];
+        Rectangle? sourceRect = type.SourceRect;
         Enemy enemy = new Enemy(type, tex, position, sourceRect, _wave);
         // Apply difficulty multipliers
         enemy.HP = (int)(enemy.HP * _gameplaySettings.EnemyHpMultiplier);

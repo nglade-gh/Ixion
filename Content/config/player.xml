@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Base parameters for the player. -->
+<player xmlns="https://www.timc.fr/nicolas-glade/dotnet/shooter"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://www.timc.fr/nicolas-glade/dotnet/shooter shooter-config.xsd">
+  <name>Player</name>
+  <texture>pics/ships/ship1</texture>
+  <width>34</width>
+  <height>48</height>
+  <scale>1.0</scale>
+  <maxHp>100</maxHp>
+  <regenRate>4</regenRate>
+  <fireRate>0.16</fireRate>
+  <maxSpeed>340</maxSpeed>
+  <lives>3</lives>
+  <invincibilityDuration>2.0</invincibilityDuration>
+  <initialScore>0</initialScore>
+  <rotation>-90</rotation>
+</player>

@@ -39,6 +39,7 @@ public class Enemy : Creature
         _sourceRect = sourceRect;
         Origin = DefaultOrigin;
         Scale = type.Scale;
+        Rotation = type.Rotation;
         MaxHP = type.Hp;
         HP = MaxHP;
         Speed = type.Speed * (1f + wave * 0.05f);

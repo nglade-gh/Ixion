@@ -15,6 +15,7 @@
     <speed>80</speed>
     <color>0,255,255,255</color>
     <amount>0</amount>
+    <rotation>0</rotation>
   </bonus>
   <bonus>
     <name>SecondaryUpgrade</name>
@@ -24,6 +25,7 @@
     <speed>80</speed>
     <color>255,0,255,255</color>
     <amount>0</amount>
+    <rotation>0</rotation>
   </bonus>
   <bonus>
     <name>SpecialAmmo</name>
@@ -33,6 +35,7 @@
     <speed>80</speed>
     <color>255,255,0,255</color>
     <amount>3</amount>
+    <rotation>0</rotation>
   </bonus>
   <bonus>
     <name>ShieldRepair</name>
@@ -42,6 +45,7 @@
     <speed>80</speed>
     <color>40,120,255,255</color>
     <amount>30</amount>
+    <rotation>0</rotation>
   </bonus>
   <bonus>
     <name>StructureRepair</name>
@@ -51,6 +55,7 @@
     <speed>80</speed>
     <color>80,200,80,255</color>
     <amount>20</amount>
+    <rotation>0</rotation>
   </bonus>
   <!-- RapidCool: laser cooling rate tripled for K seconds (amount = duration) -->
   <bonus>
@@ -61,6 +66,7 @@
     <speed>80</speed>
     <color>0,200,255,255</color>
     <amount>20</amount>
+    <rotation>0</rotation>
   </bonus>
   <!-- DiagonalShot: main weapon also fires diagonally for K seconds (amount = duration) -->
   <bonus>
@@ -71,6 +77,7 @@
     <speed>80</speed>
     <color>255,100,50,255</color>
     <amount>15</amount>
+    <rotation>0</rotation>
   </bonus>
   <!-- PowerShot: secondary weapon becomes a powerful beam for K seconds (amount = duration) -->
   <bonus>
@@ -81,6 +88,7 @@
     <speed>80</speed>
     <color>255,50,50,255</color>
     <amount>20</amount>
+    <rotation>0</rotation>
   </bonus>
   <!-- TripleShot: primary fires 3 bullets (spread) for K seconds (amount = duration) -->
   <bonus>
@@ -91,6 +99,7 @@
     <speed>80</speed>
     <color>255,255,100,255</color>
     <amount>15</amount>
+    <rotation>0</rotation>
   </bonus>
   <!-- MegaMissile: grants 10 special ammo -->
   <bonus>
@@ -101,6 +110,7 @@
     <speed>80</speed>
     <color>255,150,0,255</color>
     <amount>10</amount>
+    <rotation>0</rotation>
   </bonus>
   <!-- ShieldBoost: instant +25 shield energy -->
   <bonus>
@@ -111,5 +121,6 @@
     <speed>80</speed>
     <color>100,150,255,255</color>
     <amount>25</amount>
+    <rotation>0</rotation>
   </bonus>
 </bonuses>
