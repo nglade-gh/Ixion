@@ -310,67 +310,68 @@ public class SetupScreen : GameScreen
             float dInc = rightPressed ? 0.05f : (leftPressed ? -0.05f : 0f);
             d.PlayerDamageMultiplier = Math.Clamp(d.PlayerDamageMultiplier + dInc, 0.1f, 3f);
         }
-        else if (index == 6)
+        else if (index == 5)
         {
             d.StructureHp = Math.Clamp(d.StructureHp + inc, 10, 200);
             d.ShieldStartEnergy = d.StructureHp;
         }
-        else if (index == 7)
+        else if (index == 6)
         {
             d.LaserHeatRateModifier = Math.Clamp(d.LaserHeatRateModifier + inc, -100, 100);
         }
-        else if (index == 8)
+        else if (index == 7)
         {
             d.LaserIdleCoolMultiplier = Math.Clamp(d.LaserIdleCoolMultiplier + inc * 0.1f, 1.0f, 5.0f);
         }
-        else if (index == 9)
+        else if (index == 8)
         {
             d.EnemyBulletDamage = Math.Clamp(d.EnemyBulletDamage + inc, 1, 100);
         }
-        else if (index == 10)
+        else if (index == 9)
         {
             d.EnemyContactDamage = Math.Clamp(d.EnemyContactDamage + inc, 1, 100);
         }
-        else if (index == 11)
+        else if (index == 10)
         {
             d.PrimaryUpgradeDuration = Math.Clamp(d.PrimaryUpgradeDuration + inc * 0.5f, 1f, 60f);
         }
-        else if (index == 12)
+        else if (index == 11)
         {
             d.PrimaryUpgradeDamageMultiplier = Math.Clamp(d.PrimaryUpgradeDamageMultiplier + 0.1f, 1f, 5f);
         }
-        else if (index == 13)
+        else if (index == 12)
         {
             d.SecondaryUpgradeDuration = Math.Clamp(d.SecondaryUpgradeDuration + inc * 0.5f, 1f, 60f);
         }
-        else if (index == 14)
+        else if (index == 13)
         {
             d.SecondaryUpgradeDamageMultiplier = Math.Clamp(d.SecondaryUpgradeDamageMultiplier + 0.1f, 1f, 5f);
         }
-        else if (index == 15)
+        else if (index == 14)
         {
             d.ShieldRepairAmount = Math.Clamp(d.ShieldRepairAmount + inc, 1, 100);
         }
-        else if (index == 16)
+        else if (index == 15)
         {
             d.StructureRepairAmount = Math.Clamp(d.StructureRepairAmount + inc, 1, 200);
         }
-        else if (index == 17)
+        else if (index == 16)
         {
             d.RapidCoolDuration = Math.Clamp(d.RapidCoolDuration + inc * 0.5f, 1f, 60f);
         }
-        else if (index == 18)
+        else if (index == 17)
         {
             d.DiagonalShotDuration = Math.Clamp(d.DiagonalShotDuration + inc * 0.5f, 1f, 60f);
         }
-        else if (index == 19)
+        else if (index == 18)
         {
             d.PowerShotDuration = Math.Clamp(d.PowerShotDuration + inc * 0.5f, 1f, 60f);
         }
-        else if (index == 20)
+        else if (index == 19)
         {
             d.TripleShotDuration = Math.Clamp(d.TripleShotDuration + inc * 0.5f, 1f, 60f);
         }
+        // index 20 = Retour → rien à modifier
         AppConfig.Save();
     }
 

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Bullet archetypes.
-     kind: straight | homing
+     kind: straight | homing | sinusoidal
      homing: turn rate in degrees/second toward the player (0 = no homing)
      searchRadius: homing activation radius in px (0 = always active)
+     sinusoidal: kind="sinusoidal" falls straight down while oscillating
+       horizontally (sinusoidAmplitude in px, sinusoidFrequency in rad/s)
      sourceRect = "x,y,w,h" sub-rectangle of the texture (sprite sheets) -->
 <bullets xmlns="https://www.timc.fr/nicolas-glade/dotnet/shooter"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -202,6 +204,38 @@
     <homing>0</homing>
     <searchRadius>0</searchRadius>
     <color>255,150,255,255</color>
+    <rotation>90</rotation>
+    <hitPoints>1</hitPoints>
+  </bullet>
+  <!-- Sinusoidal: falls straight down while swaying side to side -->
+  <bullet>
+    <name>SinusoidalBullet</name>
+    <texture>pics/lasers/laser_sprites/06</texture>
+    <width>12</width>
+    <height>20</height>
+    <speed>220</speed>
+    <damage>7</damage>
+    <kind>sinusoidal</kind>
+    <homing>0</homing>
+    <searchRadius>0</searchRadius>
+    <sinusoidAmplitude>90</sinusoidAmplitude>
+    <sinusoidFrequency>3.0</sinusoidFrequency>
+    <color>120,255,255,255</color>
+    <rotation>90</rotation>
+    <hitPoints>1</hitPoints>
+  </bullet>
+  <!-- Triple wide: 3-way spread fired at -0.3 / 0 / 0.3 rad -->
+  <bullet>
+    <name>TripleWideBullet</name>
+    <texture>pics/lasers/laser_sprites/08</texture>
+    <width>12</width>
+    <height>22</height>
+    <speed>240</speed>
+    <damage>8</damage>
+    <kind>straight</kind>
+    <homing>0</homing>
+    <searchRadius>0</searchRadius>
+    <color>255,220,120,255</color>
     <rotation>90</rotation>
     <hitPoints>1</hitPoints>
   </bullet>

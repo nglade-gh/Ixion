@@ -73,6 +73,30 @@ public static class XmlConfig
 }
 
 /// <summary>
+/// Une entrée de la configuration des textures (textures.xml).
+/// Mappe le nom d'une entité (joueur ou ennemi) vers une texture alternative.
+/// </summary>
+public class TextureOverride
+{
+    /// <summary>
+    /// Nom de l'entité concernée (ex. "Player", "Scout", "EvilEye").
+    /// </summary>
+    [XmlAttribute("name")] public string Name { get; set; } = "";
+
+    /// <summary>
+    /// Chemin de la texture alternative (sans extension, dans Content/pics/).
+    /// </summary>
+    [XmlAttribute("texture")] public string Texture { get; set; } = "";
+
+    /// <summary>
+    /// Sous-rectangle optionnel "x,y,w,h" pour les textures en feuille de sprites.
+    /// </summary>
+    [XmlAttribute("sourceRect")] public string SourceRectRaw { get; set; }
+
+    [XmlIgnore] public Rectangle? SourceRect => XmlConfig.ParseSourceRect(SourceRectRaw);
+}
+
+/// <summary>
 /// Paramètres de base communs à toutes les entités du jeu.
 /// </summary>
 public class EntityParams
@@ -180,6 +204,8 @@ public class EnemyType : EnemyParams
     [XmlElement("bulletPattern")] public string BulletPatternRaw { get; set; } = "simple";
     [XmlElement("color")] public string ColorRaw { get; set; }
     [XmlElement("sourceRect")] public string SourceRectRaw { get; set; }
+    /// <summary>Numéro de vague à partir duquel cet ennemi peut apparaître (difficulté progressive).</summary>
+    [XmlElement("unlockThreshold")] public int UnlockThreshold { get; set; } = 1;
 
     [XmlIgnore] public MovePattern MovePattern => XmlConfig.ParseEnum(MovePatternRaw, MovePattern.Sine);
     [XmlIgnore] public BulletPattern BulletPattern => XmlConfig.ParseEnum(BulletPatternRaw, BulletPattern.Simple);
@@ -238,8 +264,13 @@ public class BulletParams
     [XmlIgnore] public Color Color => XmlConfig.ParseColor(ColorRaw, Color.White);
     [XmlIgnore] public Rectangle? SourceRect => XmlConfig.ParseSourceRect(SourceRectRaw);
     [XmlIgnore] public bool IsHoming => Homing > 0f;
+    [XmlIgnore] public bool IsSinusoidal => string.Equals(Kind, "sinusoidal", StringComparison.OrdinalIgnoreCase);
     [XmlElement("searchRadius")] public float SearchRadius { get; set; }
     [XmlElement("hitPoints")] public int HitPoints { get; set; } = 1;
+    /// <summary>Amplitude de l'oscillation horizontale, en px (kind="sinusoidal").</summary>
+    [XmlElement("sinusoidAmplitude")] public float SinusoidAmplitude { get; set; }
+    /// <summary>Fréquence de l'oscillation horizontale, en rad/s (kind="sinusoidal").</summary>
+    [XmlElement("sinusoidFrequency")] public float SinusoidFrequency { get; set; }
 }
 
 /// <summary>One bonus archetype dropped by enemies.</summary>
@@ -289,4 +320,39 @@ public class BulletsConfig
 public class BonusesConfig
 {
     [XmlElement("bonus")] public List<BonusParams> Bonuses { get; set; } = new();
+}
+
+[XmlRoot("textures")]
+public class TextureConfig
+{
+    [XmlElement("textureOverride")] public List<TextureOverride> Overrides { get; set; } = new();
+
+    /// <summary>
+    /// Recherche l'override de texture pour une entité par nom (insensible à la casse).
+    /// </summary>
+    /// <param name="name">Nom de l'entité (joueur ou ennemi).</param>
+    /// <returns>Override trouvé, ou null si aucun.</returns>
+    public TextureOverride GetOverride(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+            return null;
+        foreach (var o in Overrides)
+            if (!string.IsNullOrEmpty(o.Texture) &&
+                string.Equals(o.Name, name, StringComparison.OrdinalIgnoreCase))
+                return o;
+        return null;
+    }
+
+    /// <summary>
+    /// Résout le chemin de texture effectif pour une entité :
+    /// l'override de textures.xml si défini, sinon le chemin par défaut.
+    /// </summary>
+    /// <param name="name">Nom de l'entité.</param>
+    /// <param name="fallbackPath">Chemin de texture par défaut.</param>
+    /// <returns>Chemin de texture à utiliser.</returns>
+    public string ResolveTexture(string name, string fallbackPath)
+    {
+        var o = GetOverride(name);
+        return o != null ? o.Texture : fallbackPath;
+    }
 }

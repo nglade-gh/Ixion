@@ -80,20 +80,20 @@ public class Bonus : Sprite
 
         Color border = DetermineBorderColor();
 
-        // Dessiner un fond rectangulaire coloré derrière le bonus
-        float pad = 8f;
+        // Dessiner le bonus par-dessus (en premier pour que le halo passe derrière)
+        base.Draw(spriteBatch);
+
+        // Dessiner un fond rectangulaire coloré autour du bonus
+        float pad = 24f; // marge suffisante pour un halo visible (bonus 48px × 3 = 144px)
         float bw = Size.X * Scale + pad * 2f;
         float bh = Size.Y * Scale + pad * 2f;
-        float alpha = 0.3f; // 30% d'opacité = shield très transparent mais visible
+        float alpha = 0.3f; // 30% d'opacité = halo transparent mais perceptible
 
         Vector2 center = new Vector2(Position.X, Position.Y);
         spriteBatch.Draw(_whitePixel, center, null,
             new Color(border.R, border.G, border.B, (byte)(alpha * 255)),
             0f, new Vector2(bw / 2f, bh / 2f),
             new Vector2(bw, bh), SpriteEffects.None, 0f);
-
-        // Dessiner le bonus par-dessus
-        base.Draw(spriteBatch);
     }
 
     /// <summary>

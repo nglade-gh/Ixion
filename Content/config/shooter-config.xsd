@@ -140,6 +140,7 @@
                     <xs:element name="bulletPattern" type="bulletPattern" default="simple"/>
                     <xs:element name="color" type="colorString" default="255,255,255"/>
                     <xs:element name="sourceRect" type="sourceRectString" minOccurs="0"/>
+                    <xs:element name="unlockThreshold" type="xs:int" minOccurs="0" default="1"/>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>

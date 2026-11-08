@@ -198,6 +198,7 @@ class EnemyType {
   + string BulletPatternRaw
   + string ColorRaw
   + string SourceRectRaw
+  + int UnlockThreshold
   + MovePattern MovePattern
   + BulletPattern BulletPattern
   + Color Color

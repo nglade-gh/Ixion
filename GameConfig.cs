@@ -59,6 +59,11 @@ public class GameConfig
     public SoundsConfig Sounds { get; private set; }
 
     /// <summary>
+    /// Configuration des overrides de textures (joueur, ennemis).
+    /// </summary>
+    public TextureConfig Textures { get; private set; }
+
+    /// <summary>
     /// Indique si la configuration a été chargée.
     /// </summary>
     public bool Loaded { get; private set; }
@@ -80,6 +85,7 @@ public class GameConfig
         Bullets = Load<BulletsConfig>("bullets.xml") ?? DefaultBullets();
         Bonuses = Load<BonusesConfig>("bonuses.xml") ?? DefaultBonuses();
         Sounds = Load<SoundsConfig>("sounds.xml");
+        Textures = Load<TextureConfig>("textures.xml") ?? new TextureConfig();
         Loaded = true;
     }
 

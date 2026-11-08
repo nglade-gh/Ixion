@@ -42,7 +42,8 @@ public class Enemy : Creature
         MaxHP = type.Hp;
         HP = MaxHP;
         Speed = type.Speed * (1f + wave * 0.05f);
-        FireRate = 5f / type.FireRate;
+        // fireRate <= 0 means "never fires" (e.g. asteroids); avoids 5f/0f => Infinity.
+        FireRate = type.FireRate > 0f ? 5f / type.FireRate : 0f;
         ScoreValue = type.Score;
         MovePattern = type.MovePattern;
         Amplitude = type.Amplitude;

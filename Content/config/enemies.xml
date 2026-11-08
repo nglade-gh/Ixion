@@ -3,7 +3,9 @@
      size = logical size in screen pixels (original assets downscaled by ~4-5x).
      movePattern: sine | horde | charge | zigzag
      bulletPattern: simple | burst | homing
-     sourceRect = "x,y,w,h" sub-rectangle of the texture (sprite sheets). -->
+     sourceRect = "x,y,w,h" sub-rectangle of the texture (sprite sheets).
+     unlockThreshold = numéro de vague à partir duquel l'ennemi peut apparaître
+     (difficulté progressive : 1 = vagues 1-2, 3 = vagues 3-4, 5 = vagues 5+, 7 = vagues 7+). -->
 <enemies xmlns="https://www.timc.fr/nicolas-glade/dotnet/shooter"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="https://www.timc.fr/nicolas-glade/dotnet/shooter shooter-config.xsd">
@@ -21,6 +23,7 @@
     <frequency>1.6</frequency>
     <bulletPattern>simple</bulletPattern>
     <color>255,230,160</color>
+    <unlockThreshold>1</unlockThreshold>
   </enemyType>
   <enemyType>
     <name>Fighter</name>
@@ -36,6 +39,7 @@
     <frequency>1.2</frequency>
     <bulletPattern>burst</bulletPattern>
     <color>255,255,255</color>
+    <unlockThreshold>1</unlockThreshold>
   </enemyType>
   <enemyType>
     <name>Tank</name>
@@ -52,6 +56,7 @@
     <frequency>0.4</frequency>
     <bulletPattern>burst</bulletPattern>
     <color>255,120,120</color>
+    <unlockThreshold>1</unlockThreshold>
   </enemyType>
   <enemyType>
     <name>Elastic</name>
@@ -68,6 +73,7 @@
     <frequency>2.2</frequency>
     <bulletPattern>simple</bulletPattern>
     <color>170,255,170</color>
+    <unlockThreshold>1</unlockThreshold>
   </enemyType>
   <enemyType>
     <name>Kamikaze</name>
@@ -84,6 +90,7 @@
     <frequency>0</frequency>
     <bulletPattern>homing</bulletPattern>
     <color>255,90,60</color>
+    <unlockThreshold>1</unlockThreshold>
   </enemyType>
   <enemyType>
     <name>EvilEye</name>
@@ -99,6 +106,7 @@
     <frequency>1.4</frequency>
     <bulletPattern>burst</bulletPattern>
     <color>120,220,120</color>
+    <unlockThreshold>3</unlockThreshold>
   </enemyType>
   <enemyType>
     <name>Turret</name>
@@ -114,6 +122,7 @@
     <frequency>0.5</frequency>
     <bulletPattern>burst</bulletPattern>
     <color>200,160,255</color>
+    <unlockThreshold>3</unlockThreshold>
   </enemyType>
   <enemyType>
     <name>SpikeBall</name>
@@ -129,6 +138,7 @@
     <frequency>2.0</frequency>
     <bulletPattern>simple</bulletPattern>
     <color>255,180,120</color>
+    <unlockThreshold>3</unlockThreshold>
   </enemyType>
   <enemyType>
     <name>Spaceship</name>
@@ -144,6 +154,7 @@
     <frequency>1.0</frequency>
     <bulletPattern>burst</bulletPattern>
     <color>220,220,255</color>
+    <unlockThreshold>5</unlockThreshold>
   </enemyType>
   <!-- Swarm: small, fast, numerous, fires in spread pattern -->
   <enemyType>
@@ -160,6 +171,7 @@
     <frequency>2.5</frequency>
     <bulletPattern>swarm</bulletPattern>
     <color>255,255,180</color>
+    <unlockThreshold>5</unlockThreshold>
   </enemyType>
   <!-- Spread: medium enemy that fires 3-way spread -->
   <enemyType>
@@ -176,6 +188,7 @@
     <frequency>1.8</frequency>
     <bulletPattern>spread</bulletPattern>
     <color>255,180,255</color>
+    <unlockThreshold>5</unlockThreshold>
   </enemyType>
   <!-- Spiral: rotating enemy that fires in spiral -->
   <enemyType>
@@ -192,6 +205,7 @@
     <frequency>1.5</frequency>
     <bulletPattern>spiral</bulletPattern>
     <color>180,255,220</color>
+    <unlockThreshold>5</unlockThreshold>
   </enemyType>
   <!-- Boss: very large, fires energy beams -->
   <enemyType>
@@ -208,5 +222,187 @@
     <frequency>0.6</frequency>
     <bulletPattern>burst</bulletPattern>
     <color>255,100,100</color>
+    <unlockThreshold>7</unlockThreshold>
+  </enemyType>
+  <!-- ============ SpacePack additions (pics/space) ============ -->
+  <!-- Turrets: heavy base platform (slow, burst fire) + fast single-shot gun -->
+  <enemyType>
+    <name>Fortress</name>
+    <texture>pics/space/turrets/Base_1</texture>
+    <size>84</size>
+    <scale>1.0</scale>
+    <hp>130</hp>
+    <speed>20</speed>
+    <score>90</score>
+    <fireRate>1.8</fireRate>
+    <movePattern>horde</movePattern>
+    <amplitude>15</amplitude>
+    <frequency>0.4</frequency>
+    <bulletPattern>burst</bulletPattern>
+    <color>160,140,220</color>
+    <unlockThreshold>5</unlockThreshold>
+  </enemyType>
+  <enemyType>
+    <name>Gunner</name>
+    <texture>pics/space/turrets/Gun_1</texture>
+    <size>56</size>
+    <scale>1.0</scale>
+    <hp>40</hp>
+    <speed>40</speed>
+    <score>50</score>
+    <fireRate>3.2</fireRate>
+    <movePattern>sine</movePattern>
+    <amplitude>90</amplitude>
+    <frequency>1.1</frequency>
+    <bulletPattern>simple</bulletPattern>
+    <color>180,210,255</color>
+    <unlockThreshold>3</unlockThreshold>
+  </enemyType>
+  <!-- Spikeballs: drifting mine (zigzag) + shrinking charger -->
+  <enemyType>
+    <name>Mine</name>
+    <texture>pics/space/spikeballs/Mine</texture>
+    <size>56</size>
+    <scale>1.0</scale>
+    <hp>35</hp>
+    <speed>90</speed>
+    <score>40</score>
+    <fireRate>2.0</fireRate>
+    <movePattern>zigzag</movePattern>
+    <amplitude>170</amplitude>
+    <frequency>1.9</frequency>
+    <bulletPattern>simple</bulletPattern>
+    <color>255,150,90</color>
+    <unlockThreshold>3</unlockThreshold>
+  </enemyType>
+  <enemyType>
+    <name>Shrinker</name>
+    <texture>pics/space/spikeballs/Shrinker</texture>
+    <size>50</size>
+    <scale>1.0</scale>
+    <hp>22</hp>
+    <speed>115</speed>
+    <score>40</score>
+    <fireRate>1.6</fireRate>
+    <movePattern>charge</movePattern>
+    <amplitude>0</amplitude>
+    <frequency>0</frequency>
+    <bulletPattern>simple</bulletPattern>
+    <color>255,210,130</color>
+    <unlockThreshold>5</unlockThreshold>
+  </enemyType>
+  <!-- Ships: medium cruiser (burst) + fast spread-firing interceptor -->
+  <enemyType>
+    <name>Cruiser</name>
+    <texture>pics/space/ships/Spaceship_4</texture>
+    <size>72</size>
+    <scale>1.0</scale>
+    <hp>75</hp>
+    <speed>60</speed>
+    <score>65</score>
+    <fireRate>1.7</fireRate>
+    <movePattern>sine</movePattern>
+    <amplitude>130</amplitude>
+    <frequency>1.0</frequency>
+    <bulletPattern>burst</bulletPattern>
+    <color>210,220,255</color>
+    <unlockThreshold>5</unlockThreshold>
+  </enemyType>
+  <enemyType>
+    <name>Interceptor</name>
+    <texture>pics/space/ships/Spaceship_6</texture>
+    <size>62</size>
+    <scale>1.0</scale>
+    <hp>50</hp>
+    <speed>90</speed>
+    <score>55</score>
+    <fireRate>2.4</fireRate>
+    <movePattern>zigzag</movePattern>
+    <amplitude>150</amplitude>
+    <frequency>1.8</frequency>
+    <bulletPattern>spread</bulletPattern>
+    <color>255,220,180</color>
+    <unlockThreshold>7</unlockThreshold>
+  </enemyType>
+  <!-- Asteroids: drifting rocks, no fire (fireRate = 0) -->
+  <enemyType>
+    <name>Drifter</name>
+    <texture>pics/space/asteroids/Asteroid_4</texture>
+    <size>42</size>
+    <scale>1.0</scale>
+    <hp>12</hp>
+    <speed>95</speed>
+    <score>12</score>
+    <fireRate>0</fireRate>
+    <movePattern>zigzag</movePattern>
+    <amplitude>130</amplitude>
+    <frequency>1.6</frequency>
+    <bulletPattern>simple</bulletPattern>
+    <color>175,160,145</color>
+    <unlockThreshold>1</unlockThreshold>
+  </enemyType>
+  <enemyType>
+    <name>Boulder</name>
+    <texture>pics/space/asteroids/Asteroid_1</texture>
+    <size>48</size>
+    <scale>1.0</scale>
+    <hp>18</hp>
+    <speed>85</speed>
+    <score>18</score>
+    <fireRate>0</fireRate>
+    <movePattern>sine</movePattern>
+    <amplitude>70</amplitude>
+    <frequency>0.8</frequency>
+    <bulletPattern>simple</bulletPattern>
+    <color>200,185,165</color>
+    <unlockThreshold>1</unlockThreshold>
+  </enemyType>
+  <enemyType>
+    <name>Meteorite</name>
+    <texture>pics/space/asteroids/Asteroid_2</texture>
+    <size>52</size>
+    <scale>1.0</scale>
+    <hp>25</hp>
+    <speed>75</speed>
+    <score>22</score>
+    <fireRate>0</fireRate>
+    <movePattern>swarm</movePattern>
+    <amplitude>90</amplitude>
+    <frequency>1.2</frequency>
+    <bulletPattern>simple</bulletPattern>
+    <color>185,165,150</color>
+    <unlockThreshold>3</unlockThreshold>
+  </enemyType>
+  <enemyType>
+    <name>Chondrite</name>
+    <texture>pics/space/asteroids/Asteroid_3</texture>
+    <size>58</size>
+    <scale>1.0</scale>
+    <hp>35</hp>
+    <speed>62</speed>
+    <score>28</score>
+    <fireRate>0</fireRate>
+    <movePattern>horde</movePattern>
+    <amplitude>45</amplitude>
+    <frequency>0.5</frequency>
+    <bulletPattern>simple</bulletPattern>
+    <color>205,190,170</color>
+    <unlockThreshold>5</unlockThreshold>
+  </enemyType>
+  <enemyType>
+    <name>Planetoid</name>
+    <texture>pics/space/asteroids/Asteroid_5</texture>
+    <size>68</size>
+    <scale>1.0</scale>
+    <hp>55</hp>
+    <speed>48</speed>
+    <score>40</score>
+    <fireRate>0</fireRate>
+    <movePattern>sine</movePattern>
+    <amplitude>55</amplitude>
+    <frequency>0.5</frequency>
+    <bulletPattern>simple</bulletPattern>
+    <color>220,205,185</color>
+    <unlockThreshold>7</unlockThreshold>
   </enemyType>
 </enemies>

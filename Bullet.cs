@@ -5,7 +5,8 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Shooter;
 
 /// <summary>
-/// Projectile. Peut être droit, à tête chercheuse (homing) ou destructible (missiles ennemis).
+/// Projectile. Peut être droit, sinusoïdal (oscillation horizontale),
+/// à tête chercheuse (homing) ou destructible (missiles ennemis).
 /// </summary>
 public class Bullet : Sprite
 {
@@ -52,6 +53,15 @@ public class Bullet : Sprite
     private float _life = 8f;
     private float _homingTimer;
 
+    // Sinusoidal movement (kind="sinusoidal")
+    private bool _isSinusoidal;
+    private float _sinusoidAmplitude;
+    private float _sinusoidFrequency;
+    private float _spawnX;
+    private float _baseFallSpeed;
+    private float _baseRotation;
+    private float _age;
+
     /// <summary>
     /// Initialise une nouvelle instance de <see cref="Bullet"/>.
     /// </summary>
@@ -75,6 +85,16 @@ public class Bullet : Sprite
         CurrentHitPoints = p.HitPoints;
         Color = p.Color;
         Rotation = p.Rotation;
+        _isSinusoidal = p.IsSinusoidal;
+        _sinusoidAmplitude = p.SinusoidAmplitude;
+        _sinusoidFrequency = p.SinusoidFrequency;
+        _spawnX = position.X;
+        _baseRotation = p.Rotation;
+        _age = 0f;
+        // Vitesse de chute initiale (le tir sinusoïdal descend droit, en Y).
+        _baseFallSpeed = velocity.Y;
+        if (_baseFallSpeed < 1f)
+            _baseFallSpeed = velocity.Length();
     }
 
     /// <summary>Constructor for destructible homing missiles fired by enemies.</summary>
@@ -143,7 +163,20 @@ public class Bullet : Sprite
             }
         }
 
-        Position += Velocity * dt;
+        if (_isSinusoidal)
+        {
+            // Sinusoidal : descente droite + oscillation horizontale (sinusoïde).
+            _age += dt;
+            float dxdt = _sinusoidAmplitude * _sinusoidFrequency * (float)Math.Cos(_sinusoidFrequency * _age);
+            Position.X = _spawnX + _sinusoidAmplitude * (float)Math.Sin(_sinusoidFrequency * _age);
+            Position.Y += _baseFallSpeed * dt;
+            // Incline légèrement le sprite dans le sens du mouvement horizontal.
+            Rotation = _baseRotation + MathHelper.ToDegrees((float)Math.Atan2(dxdt, _baseFallSpeed));
+        }
+        else
+        {
+            Position += Velocity * dt;
+        }
         _life -= dt;
 
         float margin = 40f;

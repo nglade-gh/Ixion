@@ -58,7 +58,15 @@ public enum BulletPattern
     /// <summary>
     /// Rotation spirale autour du joueur.
     /// </summary>
-    Spiral
+    Spiral,
+    /// <summary>
+    /// Un projectile qui descend tout droit en oscillant horizontalement (sinusoïde).
+    /// </summary>
+    Sinusoidal,
+    /// <summary>
+    /// Trois projectiles en éventail large (gauche, centre, droite).
+    /// </summary>
+    TripleWide
 }
 
 /// <summary>

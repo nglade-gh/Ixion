@@ -171,8 +171,11 @@ public class GameplayScreen : GameScreen
             Console.WriteLine("  [GameplayScreen.LoadContent] Font OK");
 
             var cfg = GameConfig.Instance;
-            _playerTexture = _content.Load<Texture2D>(GameConfig.ContentKey(cfg.Entities.Player.Texture));
-            Console.WriteLine("  [GameplayScreen.LoadContent] Player tex OK");
+
+            // Overrides de textures (textures.xml) : le joueur peut utiliser une texture alternative
+            string playerTex = cfg.Textures.ResolveTexture(cfg.Entities.Player.Name, cfg.Entities.Player.Texture);
+            _playerTexture = _content.Load<Texture2D>(GameConfig.ContentKey(playerTex));
+            Console.WriteLine($"  [GameplayScreen.LoadContent] Player tex OK ({playerTex})");
 
             // Load shield frames
             _shieldNormalFrames = LoadFrames("pics/shields/Shield_Bleu");
@@ -192,7 +195,7 @@ public class GameplayScreen : GameScreen
             Console.WriteLine($"  [GameplayScreen.LoadContent] Explosions: {_explosionFrames.Count} types");
 
             foreach (var type in cfg.Enemies.EnemyTypes)
-                LoadTextureOnce(_enemyTextures, type.Texture);
+                LoadTextureOnce(_enemyTextures, cfg.Textures.ResolveTexture(type.Name, type.Texture));
             foreach (var bullet in cfg.Bullets.Bullets)
                 LoadTextureOnce(_bulletTextures, bullet.Texture);
             Console.WriteLine($"  [GameplayScreen.LoadContent] Enemies: {_enemyTextures.Count} Bullets: {_bulletTextures.Count}");
@@ -236,7 +239,12 @@ public class GameplayScreen : GameScreen
     private Texture2D LoadTextureOnce(Dictionary<string, Texture2D> cache, string path)
     {
         string key = GameConfig.ContentKey(path);
-        if (string.IsNullOrEmpty(key) || cache.ContainsKey(key))
+        if (string.IsNullOrEmpty(key))
+        {
+            Console.WriteLine($"[WARNING] Tentative de chargement de texture avec une clé vide (path='{path}')");
+            return null;
+        }
+        if (cache.ContainsKey(key))
             return cache[key];
         cache[key] = _content.Load<Texture2D>(key);
         return cache[key];
@@ -578,11 +586,21 @@ public class GameplayScreen : GameScreen
 
     /// <summary>
     /// Fait apparaître un ennemi (ou une horde) selon les paramètres XML.
+    /// Difficulté progressive : seuls les archetypes dont le seuil de vague
+    /// (unlockThreshold) est inférieur ou égal à la vague courante sont tirés.
     /// </summary>
     private void SpawnEnemy()
     {
-        var types = GameConfig.Instance.Enemies.EnemyTypes;
-        var type = types[_random.Next(types.Count)];
+        var allTypes = GameConfig.Instance.Enemies.EnemyTypes;
+        if (allTypes.Count == 0)
+            return; // Aucune définition d'ennemi disponible
+        var available = allTypes
+            .Where(t => _wave >= t.UnlockThreshold)
+            .ToList();
+        if (available.Count == 0)
+            available = new List<EnemyType> { allTypes[0] };
+
+        var type = available[_random.Next(available.Count)];
 
         // Hordes: groups of Scouts or Fighters
         if ((string.Equals(type.Name, "Scout", StringComparison.OrdinalIgnoreCase) ||
@@ -615,8 +633,12 @@ public class GameplayScreen : GameScreen
     /// <returns>Ennemi cree.</returns>
     private Enemy CreateEnemy(EnemyType type, Vector2 position)
     {
-        Texture2D tex = _enemyTextures[GameConfig.ContentKey(type.Texture)];
-        Enemy enemy = new Enemy(type, tex, position, type.SourceRect, _wave);
+        var cfg = GameConfig.Instance;
+        // Resolver l'eventuelle override de texture (textures.xml) pour cet ennemi
+        string texPath = cfg.Textures.ResolveTexture(type.Name, type.Texture);
+        Texture2D tex = _enemyTextures[GameConfig.ContentKey(texPath)];
+        Rectangle? sourceRect = type.SourceRect ?? cfg.Textures.GetOverride(type.Name)?.SourceRect;
+        Enemy enemy = new Enemy(type, tex, position, sourceRect, _wave);
         // Apply difficulty multipliers
         enemy.HP = (int)(enemy.HP * _gameplaySettings.EnemyHpMultiplier);
         enemy.MaxHP = enemy.HP;
@@ -757,6 +779,20 @@ public class GameplayScreen : GameScreen
                     SpawnEnemyBullet(cfg.GetBullet("SpiralBullet"), muzzle, dir);
                 }
                 if (_audio != null) _audio.PlaySfx("enemy_bullet");
+                break;
+            case BulletPattern.Sinusoidal:
+                // 1 tir qui descend droit en oscillant horizontalement (sinusoïde, gérée dans Bullet.Update)
+                SpawnEnemyBullet(cfg.GetBullet("SinusoidalBullet"), muzzle, new Vector2(0f, 1f));
+                if (_audio != null) _audio.PlaySfx("enemy_bullet");
+                break;
+            case BulletPattern.TripleWide:
+                // 3 tirs en éventail large à -0.3 / 0 / 0.3 rad
+                foreach (float angle in new[] { -0.3f, 0f, 0.3f })
+                {
+                    Vector2 dir = new Vector2((float)Math.Sin(angle), (float)Math.Cos(angle));
+                    SpawnEnemyBullet(cfg.GetBullet("TripleWideBullet"), muzzle, dir);
+                }
+                if (_audio != null) _audio.PlaySfx("enemy_laser");
                 break;
         }
     }
@@ -1046,15 +1082,20 @@ public class GameplayScreen : GameScreen
     /// <param name="spriteBatch">Batch de rendu MonoGame.</param>
     private void DrawHUD(SpriteBatch spriteBatch)
     {
-        // Shield bar (blue) - top right
+        // Wave display (top-right)
+        int waveNum = (int)Math.Max(1f, _wave);
+        spriteBatch.DrawString(_font, "Vague " + waveNum,
+            new Vector2(ScreenManager._Instance._Dimensions.X - 80, 10), Color.White);
+
+        // Shield bar (blue) - below wave
         float barWidth = 150f;
         float barHeight = 12f;
         float shieldRatio = _player.ShieldEnergy / 100f;
         var shieldBarRect = new Rectangle(
-            (int)(ScreenManager._Instance._Dimensions.X - barWidth - 10), 10,
+            (int)(ScreenManager._Instance._Dimensions.X - barWidth - 10), 30,
             (int)(barWidth * Math.Clamp(shieldRatio, 0f, 1f)), (int)barHeight);
         spriteBatch.DrawString(_font, "Shield",
-            new Vector2((int)(ScreenManager._Instance._Dimensions.X - barWidth - 10 - 50), 10),
+            new Vector2((int)(ScreenManager._Instance._Dimensions.X - barWidth - 10 - 50), 30),
             Color.Cyan);
         if (shieldBarRect.Width > 0)
             spriteBatch.Draw(_particleTexture, shieldBarRect, new Color(40, 120, 255));
@@ -1064,10 +1105,10 @@ public class GameplayScreen : GameScreen
         {
             float structureRatio = (float)_player.HP / _player.MaxHP;
             var structBarRect = new Rectangle(
-                (int)ScreenManager._Instance._Dimensions.X - (int)barWidth - 10, 30,
+                (int)ScreenManager._Instance._Dimensions.X - (int)barWidth - 10, 50,
                 (int)(barWidth * Math.Clamp(structureRatio, 0f, 1f)), (int)barHeight);
             spriteBatch.DrawString(_font, "Vaisseau",
-                new Vector2((int)(ScreenManager._Instance._Dimensions.X - barWidth - 10 - 58), 30),
+                new Vector2((int)(ScreenManager._Instance._Dimensions.X - barWidth - 10 - 58), 50),
                 Color.Red);
             if (structBarRect.Width > 0)
                 spriteBatch.Draw(_particleTexture, structBarRect, new Color(220, 50, 50));
@@ -1075,7 +1116,7 @@ public class GameplayScreen : GameScreen
 
         // Temperature bar (green) - below structure
         float tempRatio = _player.LaserHeat / Player.LaserMaxHeat;
-        int tempY = 50;
+        int tempY = 70;
         string tempLabel = _player.IsOverheated ? "Chaud!" : "Temp.";
         Color tempColor = _player.IsOverheated ? Color.OrangeRed : Color.Green;
         var tempBarRect = new Rectangle(
