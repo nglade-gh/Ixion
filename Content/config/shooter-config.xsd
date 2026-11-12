@@ -252,6 +252,97 @@
     </xs:element>
 
     <!-- ==============================
+         gameplay.xml
+         ============================== -->
+
+    <xs:complexType name="unlockThresholdEntry">
+        <xs:sequence>
+            <xs:element name="wave" type="xs:int"/>
+        </xs:sequence>
+        <xs:attribute name="type" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="playerStatsEntry">
+        <xs:sequence>
+            <xs:element name="structureHp" type="xs:int" default="100"/>
+            <xs:element name="shieldStartEnergy" type="xs:float" default="100"/>
+            <xs:element name="shieldRegenMultiplier" type="xs:float" default="1.0"/>
+            <xs:element name="enemyBulletDamage" type="xs:int" default="10"/>
+            <xs:element name="enemyContactDamage" type="xs:int" default="20"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="laserEntry">
+        <xs:sequence>
+            <xs:element name="baseHeatRate" type="xs:float" default="5"/>
+            <xs:element name="maxHeat" type="xs:float" default="100"/>
+            <xs:element name="idleCoolRate" type="xs:float" default="2"/>
+            <xs:element name="fireCoolRate" type="xs:float" default="0.5"/>
+            <xs:element name="overheatThreshold" type="xs:float" default="0.75"/>
+            <xs:element name="overheatFireRateDivisor" type="xs:int" default="3"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="bonusEntry">
+        <xs:sequence>
+            <xs:element name="primaryUpgrade" type="xs:bonusDuration" minOccurs="0"/>
+            <xs:element name="secondaryUpgrade" type="xs:bonusDuration" minOccurs="0"/>
+            <xs:element name="shieldRepairAmount" type="xs:int" default="30"/>
+            <xs:element name="structureRepairAmount" type="xs:int" default="20"/>
+            <xs:element name="rapidCoolDuration" type="xs:float" default="20"/>
+            <xs:element name="diagonalShotDuration" type="xs:float" default="15"/>
+            <xs:element name="powerShotDuration" type="xs:float" default="20"/>
+            <xs:element name="tripleShotDuration" type="xs:float" default="15"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="bonusDuration">
+        <xs:attribute name="duration" type="xs:float" use="required"/>
+        <xs:attribute name="damageMultiplier" type="xs:float" default="2"/>
+    </xs:complexType>
+
+    <xs:complexType name="difficultyPresetEntry">
+        <xs:sequence>
+            <xs:element name="spawnRateModifier" type="xs:int" default="0"/>
+            <xs:element name="enemyHpModifier" type="xs:int" default="0"/>
+            <xs:element name="enemySpeedModifier" type="xs:int" default="0"/>
+            <xs:element name="playerDamageMultiplier" type="xs:float" default="1.0"/>
+            <xs:element name="laserHeatRateModifier" type="xs:int" default="0"/>
+            <xs:element name="laserCoolingRateModifier" type="xs:int" default="100"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="difficultyPreset" use="required"/>
+        <xs:attribute name="shieldRegenMultiplier" type="xs:float" default="1.0"/>
+    </xs:complexType>
+
+    <xs:complexType name="gameplayConfig">
+        <xs:sequence>
+            <xs:element name="waveGrowthRate" type="xs:float" default="0.05"/>
+            <xs:element name="baseSpawnInterval" type="xs:float" default="7.5"/>
+            <xs:element name="minSpawnInterval" type="xs:float" default="2.0"/>
+            <xs:element name="spawnIntervalDecayRate" type="xs:float" default="0.1"/>
+            <xs:element name="unlockThresholds">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="threshold" type="unlockThresholdEntry" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="playerStats" type="playerStatsEntry" minOccurs="0"/>
+            <xs:element name="laser" type="laserEntry" minOccurs="0"/>
+            <xs:element name="bonuses" type="bonusEntry" minOccurs="0"/>
+            <xs:element name="difficultyPresets">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="preset" type="difficultyPresetEntry" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="gameplay" type="gameplayConfig"/>
+
+    <!-- ==============================
          user_settings.xml
          ============================== -->
 

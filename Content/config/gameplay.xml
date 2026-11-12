@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Dynamique de jeu : progression des vagues par score, spawn, seuils d'unlock, presets de difficulté. -->
+<gameplay xmlns="https://www.timc.fr/nicolas-glade/dotnet/shooter">
+
+  <!-- ==============================
+       Progression des vagues (par score)
+       ============================== -->
+  <!-- Le wave augmente quand le score dépasse les seuils définis ci-dessous.
+       Si aucun seuil n'est trouvé, le wave reste à 1. -->
+  <waveGrowthRate>0.05</waveGrowthRate>
+  <baseSpawnInterval>7.5</baseSpawnInterval>
+  <minSpawnInterval>2.0</minSpawnInterval>
+  <spawnIntervalDecayRate>0.1</spawnIntervalDecayRate>
+
+  <!-- ==============================
+       Seuils de score : types ennemis et difficulté
+       type = types d'ennemis à débloquer, séparés par ";" (ex: "charge;swarm")
+       value = score cumulé à partir duquel ce seuil s'active
+       wave = numéro de vague affiché
+       difficultyMultiplier = coefficient appliqué aux paramètres de difficulté (HP, vitesse, spawn)
+       ============================== -->
+  <unlockThresholds>
+    <threshold value="1000" type="zigzag" wave="2" difficultyMultiplier="1.0" />
+    <threshold value="2000" type="passive" wave="3" difficultyMultiplier="1.0" />
+    <threshold value="3000" type="swarm" wave="4" difficultyMultiplier="1.0" />
+    <threshold value="5000" type="charge" wave="6" difficultyMultiplier="1.0" />
+    <threshold value="7000" type="boss" wave="10" difficultyMultiplier="1.0" />
+    <threshold value="9000" type="zigzag" wave="13" difficultyMultiplier="2.0" />
+    <threshold value="11000" type="swarm" wave="15" difficultyMultiplier="3.0" />
+    <threshold value="11500" type="charge;swarm" wave="18" difficultyMultiplier="3.0" />
+    <threshold value="12500" type="charge;swarm;zigzag" wave="20" difficultyMultiplier="5.0" />
+  </unlockThresholds>
+
+  <!-- ==============================
+       Stats joueur
+       ============================== -->
+  <playerStats>
+    <structureHp>100</structureHp>
+    <shieldStartEnergy>100</shieldStartEnergy>
+    <shieldRegenMultiplier>1.0</shieldRegenMultiplier>
+    <enemyBulletDamage>10</enemyBulletDamage>
+    <enemyContactDamage>20</enemyContactDamage>
+  </playerStats>
+
+  <!-- ==============================
+       Arme laser — chaleur et refroidissement
+       ============================== -->
+  <laser>
+    <baseHeatRate>5</baseHeatRate>
+    <maxHeat>100</maxHeat>
+    <idleCoolRate>2</idleCoolRate>
+    <fireCoolRate>0.5</fireCoolRate>
+    <overheatThreshold>0.75</overheatThreshold>
+    <overheatFireRateDivisor>3</overheatFireRateDivisor>
+  </laser>
+
+  <!-- ==============================
+       Bonus — durées et multiplicateurs
+       ============================== -->
+  <bonuses>
+    <primaryUpgrade duration="8" damageMultiplier="2" />
+    <secondaryUpgrade duration="8" damageMultiplier="2" />
+    <shieldRepairAmount>30</shieldRepairAmount>
+    <structureRepairAmount>20</structureRepairAmount>
+    <rapidCoolDuration>20</rapidCoolDuration>
+    <diagonalShotDuration>15</diagonalShotDuration>
+    <powerShotDuration>20</powerShotDuration>
+    <tripleShotDuration>15</tripleShotDuration>
+  </bonuses>
+
+  <!-- ==============================
+       Presets de difficulté
+       ============================== -->
+  <difficultyPresets>
+    <preset name="Easy" shieldRegenMultiplier="1.5">
+      <spawnRateModifier>-50</spawnRateModifier>
+      <enemyHpModifier>-40</enemyHpModifier>
+      <enemySpeedModifier>-40</enemySpeedModifier>
+      <playerDamageMultiplier>1.5</playerDamageMultiplier>
+      <laserHeatRateModifier>-80</laserHeatRateModifier>
+      <laserCoolingRateModifier>200</laserCoolingRateModifier>
+    </preset>
+    <preset name="Normal" shieldRegenMultiplier="1.0">
+      <spawnRateModifier>0</spawnRateModifier>
+      <enemyHpModifier>0</enemyHpModifier>
+      <enemySpeedModifier>0</enemySpeedModifier>
+      <playerDamageMultiplier>1.0</playerDamageMultiplier>
+      <laserHeatRateModifier>-66</laserHeatRateModifier>
+      <laserCoolingRateModifier>100</laserCoolingRateModifier>
+    </preset>
+    <preset name="Hard" shieldRegenMultiplier="0.7">
+      <spawnRateModifier>40</spawnRateModifier>
+      <enemyHpModifier>50</enemyHpModifier>
+      <enemySpeedModifier>30</enemySpeedModifier>
+      <playerDamageMultiplier>0.8</playerDamageMultiplier>
+      <laserHeatRateModifier>-50</laserHeatRateModifier>
+      <laserCoolingRateModifier>75</laserCoolingRateModifier>
+    </preset>
+    <preset name="Expert" shieldRegenMultiplier="0.5">
+      <spawnRateModifier>100</spawnRateModifier>
+      <enemyHpModifier>100</enemyHpModifier>
+      <enemySpeedModifier>60</enemySpeedModifier>
+      <playerDamageMultiplier>0.5</playerDamageMultiplier>
+      <laserHeatRateModifier>-33</laserHeatRateModifier>
+      <laserCoolingRateModifier>50</laserCoolingRateModifier>
+    </preset>
+  </difficultyPresets>
+
+</gameplay>

@@ -524,23 +524,35 @@ public static class AppConfig
     /// </summary>
     public static GameplaySettings GetGameplaySettings()
     {
+        var g = GameConfig.Instance.Gameplay;
         float spawnMod = 1f + _difficulty.SpawnRateModifier / 100f;
         float hpMod = 1f + _difficulty.EnemyHpModifier / 100f;
         float speedMod = 1f + _difficulty.EnemySpeedModifier / 100f;
         float damageMod = _difficulty.PlayerDamageMultiplier;
 
+        // Find shield regen from difficulty presets
+        float shieldRegen = 1.0f;
+        foreach (var p in g.DifficultyPresets)
+        {
+            if (Enum.TryParse(p.Name, true, out DifficultyPreset preset) && preset == _difficulty.Preset)
+            {
+                shieldRegen = p.ShieldRegenMultiplier;
+                break;
+            }
+        }
+
         return new GameplaySettings
         {
-            BaseSpawnInterval = 7.5f / spawnMod,
-            MinSpawnInterval = 2.0f / spawnMod,
-            WaveGrowthRate = 0.05f * spawnMod,
+            BaseSpawnInterval = g.BaseSpawnInterval / spawnMod,
+            MinSpawnInterval = g.MinSpawnInterval / spawnMod,
+            WaveGrowthRate = g.WaveGrowthRate * spawnMod,
+            SpawnIntervalDecayRate = g.SpawnIntervalDecayRate / spawnMod,
             EnemyHpMultiplier = hpMod,
             EnemySpeedMultiplier = speedMod,
             PlayerDamageMultiplier = damageMod,
             PlayerShieldStart = _difficulty.ShieldStartEnergy,
             PlayerStructureHp = _difficulty.StructureHp,
-            ShieldRegenMultiplier = _shieldRegenPresets.TryGetValue(_difficulty.Preset, out float regen)
-                ? regen : 1.0f,
+            ShieldRegenMultiplier = shieldRegen,
             EnemyBulletDamage = _difficulty.EnemyBulletDamage,
             EnemyContactDamage = _difficulty.EnemyContactDamage
         };
@@ -602,6 +614,7 @@ public class GameplaySettings
     public float BaseSpawnInterval { get; set; } = 1.5f;
     public float MinSpawnInterval { get; set; } = 0.4f;
     public float WaveGrowthRate { get; set; } = 0.05f;
+    public float SpawnIntervalDecayRate { get; set; } = 0.1f;
     public float EnemyHpMultiplier { get; set; } = 1f;
     public float EnemySpeedMultiplier { get; set; } = 1f;
     public float PlayerDamageMultiplier { get; set; } = 1f;

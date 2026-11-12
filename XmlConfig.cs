@@ -268,6 +268,131 @@ public class BonusParams
 }
 
 // ---------------------------------------------------------------------------
+// Gameplay progression and wave unlock thresholds
+// ---------------------------------------------------------------------------
+
+/// <summary>
+/// Seuil de score pour débloquer des types d'ennemis et modifier la difficulté.
+/// Supporte plusieurs types séparés par des ";" (ex: "charge;swarm").
+/// </summary>
+public class ScoreThresholdEntry
+{
+    /// <summary>Valeur de score à laquelle ce seuil est activé.</summary>
+    [XmlAttribute("value")] public float ScoreValue { get; set; } = 0f;
+
+    /// <summary>Types d'ennemis à débloquer (séparés par ";", ex: "charge;swarm;zigzag").</summary>
+    [XmlAttribute("type")] public string Types { get; set; } = "";
+
+    /// <summary>Numéro de vague à afficher (valeur visuelle, pas nécessairement séquentielle).</summary>
+    [XmlAttribute("wave")] public int Wave { get; set; } = 1;
+
+    /// <summary>
+    /// Multiplicateur de difficulté appliqué quand ce seuil est actif.
+    /// Modifie les paramètres de spawn, PV, vitesse, etc. (ex: 1.0 = base, 2.0 = x2).
+    /// </summary>
+    [XmlAttribute("difficultyMultiplier")] public float DifficultyMultiplier { get; set; } = 1.0f;
+}
+
+/// <summary>Player stats baseline (overridden by difficulty presets).</summary>
+public class PlayerStatsEntry
+{
+    [XmlElement("structureHp")] public int StructureHp { get; set; } = 100;
+    [XmlElement("shieldStartEnergy")] public float ShieldStartEnergy { get; set; } = 100f;
+    [XmlElement("shieldRegenMultiplier")] public float ShieldRegenMultiplier { get; set; } = 1.0f;
+    [XmlElement("enemyBulletDamage")] public int EnemyBulletDamage { get; set; } = 10;
+    [XmlElement("enemyContactDamage")] public int EnemyContactDamage { get; set; } = 20;
+}
+
+/// <summary>Laser heat and cooling parameters.</summary>
+public class LaserEntry
+{
+    [XmlElement("baseHeatRate")] public float BaseHeatRate { get; set; } = 5f;
+    [XmlElement("maxHeat")] public float MaxHeat { get; set; } = 100f;
+    [XmlElement("idleCoolRate")] public float IdleCoolRate { get; set; } = 2f;
+    [XmlElement("fireCoolRate")] public float FireCoolRate { get; set; } = 0.5f;
+    [XmlElement("overheatThreshold")] public float OverheatThreshold { get; set; } = 0.75f;
+    [XmlElement("overheatFireRateDivisor")] public float OverheatFireRateDivisor { get; set; } = 3f;
+}
+
+/// <summary>Bonus durations and multipliers.</summary>
+public class BonusEntry
+{
+    [XmlElement("primaryUpgrade")] public PrimaryUpgradeEntry PrimaryUpgrade { get; set; } = new();
+    [XmlElement("secondaryUpgrade")] public SecondaryUpgradeEntry SecondaryUpgrade { get; set; } = new();
+    [XmlElement("shieldRepairAmount")] public int ShieldRepairAmount { get; set; } = 30;
+    [XmlElement("structureRepairAmount")] public int StructureRepairAmount { get; set; } = 20;
+    [XmlElement("rapidCoolDuration")] public float RapidCoolDuration { get; set; } = 20f;
+    [XmlElement("diagonalShotDuration")] public float DiagonalShotDuration { get; set; } = 15f;
+    [XmlElement("powerShotDuration")] public float PowerShotDuration { get; set; } = 20f;
+    [XmlElement("tripleShotDuration")] public float TripleShotDuration { get; set; } = 15f;
+}
+
+/// <summary>Primary weapon upgrade duration and damage multiplier.</summary>
+public class PrimaryUpgradeEntry
+{
+    [XmlAttribute("duration")] public float Duration { get; set; } = 8f;
+    [XmlAttribute("damageMultiplier")] public float DamageMultiplier { get; set; } = 2f;
+}
+
+/// <summary>Secondary weapon upgrade duration and damage multiplier.</summary>
+public class SecondaryUpgradeEntry
+{
+    [XmlAttribute("duration")] public float Duration { get; set; } = 8f;
+    [XmlAttribute("damageMultiplier")] public float DamageMultiplier { get; set; } = 2f;
+}
+
+/// <summary>Difficulty preset overrides for spawn rate and HP/speed modifiers.</summary>
+public class DifficultyPresetEntry
+{
+    [XmlAttribute("name")] public string Name { get; set; } = "Normal";
+
+    [XmlElement("spawnRateModifier")] public int SpawnRateModifier { get; set; } = 0;
+    [XmlElement("enemyHpModifier")] public int EnemyHpModifier { get; set; } = 0;
+    [XmlElement("enemySpeedModifier")] public int EnemySpeedModifier { get; set; } = 0;
+    [XmlElement("playerDamageMultiplier")] public float PlayerDamageMultiplier { get; set; } = 1.0f;
+    [XmlElement("laserHeatRateModifier")] public int LaserHeatRateModifier { get; set; } = 0;
+    [XmlElement("laserCoolingRateModifier")] public int LaserCoolingRateModifier { get; set; } = 0;
+    [XmlElement("shieldRegenMultiplier")] public float ShieldRegenMultiplier { get; set; } = 1.0f;
+}
+
+/// <summary>
+/// Configuration complète de la dynamique de jeu. Chargée depuis Content/config/gameplay.xml.
+/// Contient : progression des vagues, spawn, seuils d'unlock, stats joueur, laser, bonus, presets.
+/// </summary>
+[XmlRoot("gameplay")]
+public class GameplayXmlConfig
+{
+    /// <summary>Taux de croissance de la vague (vague augmente de ce facteur par seconde).</summary>
+    [XmlElement("waveGrowthRate")] public float WaveGrowthRate { get; set; } = 0.05f;
+
+    /// <summary>Intervalle de spawn initial, en secondes.</summary>
+    [XmlElement("baseSpawnInterval")] public float BaseSpawnInterval { get; set; } = 7.5f;
+
+    /// <summary>Intervalle de spawn minimum, en secondes.</summary>
+    [XmlElement("minSpawnInterval")] public float MinSpawnInterval { get; set; } = 2.0f;
+
+    /// <summary>Taux de décroissance de l'intervalle de spawn par seconde.</summary>
+    [XmlElement("spawnIntervalDecayRate")] public float SpawnIntervalDecayRate { get; set; } = 0.1f;
+
+    /// <summary>Seuils de score pour débloquer des types d'ennemis et modifier la difficulté.</summary>
+    [XmlArray("unlockThresholds")] [XmlArrayItem("threshold")]
+    public List<ScoreThresholdEntry> ScoreThresholds { get; set; } = new();
+
+    /// <summary>Stats de base du joueur (surcharge par presets de difficulté).</summary>
+    [XmlElement("playerStats")] public PlayerStatsEntry PlayerStats { get; set; } = new();
+
+    /// <summary>Paramètres du laser (chaleur et refroidissement).</summary>
+    [XmlElement("laser")] public LaserEntry Laser { get; set; } = new();
+
+    /// <summary>Durées et multiplicateurs des bonus.</summary>
+    [XmlElement("bonuses")] public BonusEntry Bonuses { get; set; } = new();
+
+    /// <summary>Presets de difficulté (Easy, Normal, Hard, Expert).</summary>
+    [XmlArray("difficultyPresets")] [XmlArrayItem("preset")]
+    public List<DifficultyPresetEntry> DifficultyPresets { get; set; } = new();
+}
+
+// ---------------------------------------------------------------------------
 // Root documents
 // ---------------------------------------------------------------------------
 

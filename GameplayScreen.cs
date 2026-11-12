@@ -88,6 +88,21 @@ public class GameplayScreen : GameScreen
     private float _wave = 1f;
 
     /// <summary>
+    /// Index du seuil de score suivant à franchir.
+    /// </summary>
+    private int _nextThresholdIndex = 0;
+
+    /// <summary>
+    /// Multiplicateur de difficulté accumulé (issu des seuils de score).
+    /// </summary>
+    private float _difficultyMultiplier = 1.0f;
+
+    /// <summary>
+    /// Types d'ennemis débloqués par les seuils de score (noms des ennemis).
+    /// </summary>
+    private readonly HashSet<string> _unlockedEnemyTypes = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
     /// Indique si la partie est terminée.
     /// </summary>
     private bool _gameOver;
@@ -309,6 +324,7 @@ public class GameplayScreen : GameScreen
         _enemySpawnTimer = 0f;
         _enemySpawnInterval = 1.5f;
         _wave = 1f;
+        ResetScoreThresholds();
         _gameOver = false;
         _gameOverTimer = 0f;
     }
@@ -570,12 +586,14 @@ public class GameplayScreen : GameScreen
                 _tripleShotActive = false;
         }
 
+        // Score-based wave progression: check thresholds against player score
+        CheckScoreThresholds();
+
         HandleCollisions();
         HandleBonusCollection();
 
-        // Difficulty ramps up over time
-        _wave += dt * _gameplaySettings.WaveGrowthRate;
-        _enemySpawnInterval = Math.Max(_gameplaySettings.MinSpawnInterval, _enemySpawnInterval - dt * 0.1f);
+        // Spawn interval decays over time (independent of score)
+        _enemySpawnInterval = Math.Max(_gameplaySettings.MinSpawnInterval, _enemySpawnInterval - dt * _gameplaySettings.SpawnIntervalDecayRate);
 
         base.Update(gameTime);
     }
@@ -583,6 +601,70 @@ public class GameplayScreen : GameScreen
     // -----------------------------------------------------------------
     // Spawning
     // -----------------------------------------------------------------
+
+    /// <summary>
+    /// Vérifie les seuils de score et met à jour la vague et le multiplicateur de difficulté.
+    /// Les types d'ennemis sont débloqués individuellement par leur nom.
+    /// </summary>
+    private void CheckScoreThresholds()
+    {
+        var thresholds = GameConfig.Instance.Gameplay.ScoreThresholds;
+        if (thresholds == null || thresholds.Count == 0)
+            return;
+
+        int score = _player.Score;
+
+        // Parcourir les seuils et activer ceux dont le score est atteint
+        for (int i = _nextThresholdIndex; i < thresholds.Count; i++)
+        {
+            var entry = thresholds[i];
+            if (score >= entry.ScoreValue)
+            {
+                // Mettre à jour la vague affichée (valeur maximale atteinte)
+                if (entry.Wave > _wave)
+                    _wave = entry.Wave;
+
+                // Accumuler le multiplicateur de difficulté
+                _difficultyMultiplier *= entry.DifficultyMultiplier;
+
+                // Débloquer les types d'ennemis (séparés par ";")
+                if (!string.IsNullOrWhiteSpace(entry.Types))
+                {
+                    var types = entry.Types.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    foreach (var t in types)
+                    {
+                        _unlockedEnemyTypes.Add(t);
+                    }
+                }
+
+                _nextThresholdIndex = i + 1;
+            }
+            else
+            {
+                // Les seuils sont triés par valeur croissante → on arrête
+                break;
+            }
+        }
+
+        // Appliquer le multiplicateur de difficulté aux paramètres
+        _gameplaySettings.EnemyHpMultiplier = _difficultyMultiplier;
+        _gameplaySettings.EnemySpeedMultiplier = _difficultyMultiplier;
+        // Ajuster l'intervalle de spawn en fonction de la difficulté
+        // Plus le multiplicateur est élevé, plus les spawns sont rapprochés (plafonné à MinSpawnInterval)
+        float spawnRateFactor = 1f / Math.Max(1f, _difficultyMultiplier);
+        // On ne modifie pas _enemySpawnInterval ici car elle est gérée par DecayRate
+    }
+
+    /// <summary>
+    /// Réinitialise les seuils de score pour une nouvelle partie.
+    /// </summary>
+    private void ResetScoreThresholds()
+    {
+        _nextThresholdIndex = 0;
+        _difficultyMultiplier = 1.0f;
+        _unlockedEnemyTypes.Clear();
+        _wave = 1f;
+    }
 
     /// <summary>
     /// Fait apparaître un ennemi (ou une horde) selon les paramètres XML.
@@ -594,9 +676,24 @@ public class GameplayScreen : GameScreen
         var allTypes = GameConfig.Instance.Enemies.EnemyTypes;
         if (allTypes.Count == 0)
             return; // Aucune définition d'ennemi disponible
-        var available = allTypes
-            .Where(t => _wave >= t.UnlockThreshold)
-            .ToList();
+
+        // Determine available enemy types based on score thresholds
+        List<EnemyType> available;
+        if (_unlockedEnemyTypes.Count > 0)
+        {
+            // Use type-based unlocks from score thresholds
+            available = allTypes
+                .Where(t => _unlockedEnemyTypes.Contains(t.Name))
+                .ToList();
+        }
+        else
+        {
+            // Fallback: use wave-based unlocks
+            available = allTypes
+                .Where(t => _wave >= t.UnlockThreshold)
+                .ToList();
+        }
+
         if (available.Count == 0)
             available = new List<EnemyType> { allTypes[0] };
 

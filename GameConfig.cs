@@ -59,6 +59,11 @@ public class GameConfig
     public SoundsConfig Sounds { get; private set; }
 
     /// <summary>
+    /// Configuration de la dynamique de jeu (vagues, spawn, unlock, presets).
+    /// </summary>
+    public GameplayXmlConfig Gameplay { get; private set; }
+
+    /// <summary>
     /// Indique si la configuration a été chargée.
     /// </summary>
     public bool Loaded { get; private set; }
@@ -80,6 +85,7 @@ public class GameConfig
         Bullets = Load<BulletsConfig>("bullets.xml") ?? DefaultBullets();
         Bonuses = Load<BonusesConfig>("bonuses.xml") ?? DefaultBonuses();
         Sounds = Load<SoundsConfig>("sounds.xml");
+        Gameplay = Load<GameplayXmlConfig>("gameplay.xml") ?? DefaultGameplay();
         Loaded = true;
     }
 
@@ -392,6 +398,61 @@ public class GameConfig
                 Width = 16, Height = 16, Speed = 80f,
                 ColorRaw = "80,200,80,255", Amount = 20
             }
+        }
+    };
+
+    private static GameplayXmlConfig DefaultGameplay() => new()
+    {
+        WaveGrowthRate = 0.05f,
+        BaseSpawnInterval = 7.5f,
+        MinSpawnInterval = 2.0f,
+        SpawnIntervalDecayRate = 0.1f,
+        ScoreThresholds = new List<ScoreThresholdEntry>
+        {
+            new() { ScoreValue = 1000, Types = "passive", Wave = 3, DifficultyMultiplier = 1.0f },
+            new() { ScoreValue = 2000, Types = "zigzag", Wave = 3, DifficultyMultiplier = 1.0f },
+            new() { ScoreValue = 3000, Types = "swarm", Wave = 4, DifficultyMultiplier = 1.0f },
+            new() { ScoreValue = 5000, Types = "charge", Wave = 6, DifficultyMultiplier = 1.0f },
+            new() { ScoreValue = 7000, Types = "boss", Wave = 10, DifficultyMultiplier = 1.0f },
+            new() { ScoreValue = 9000, Types = "zigzag", Wave = 13, DifficultyMultiplier = 2.0f },
+            new() { ScoreValue = 11000, Types = "swarm", Wave = 15, DifficultyMultiplier = 3.0f },
+            new() { ScoreValue = 11500, Types = "charge;swarm", Wave = 18, DifficultyMultiplier = 3.0f },
+            new() { ScoreValue = 12500, Types = "charge;swarm;zigzag", Wave = 18, DifficultyMultiplier = 5.0f }
+        },
+        PlayerStats = new PlayerStatsEntry
+        {
+            StructureHp = 100,
+            ShieldStartEnergy = 100f,
+            ShieldRegenMultiplier = 1.0f,
+            EnemyBulletDamage = 10,
+            EnemyContactDamage = 20
+        },
+        Laser = new LaserEntry
+        {
+            BaseHeatRate = 5f,
+            MaxHeat = 100f,
+            IdleCoolRate = 2f,
+            FireCoolRate = 0.5f,
+            OverheatThreshold = 0.75f,
+            OverheatFireRateDivisor = 3f
+        },
+        Bonuses = new BonusEntry
+        {
+            PrimaryUpgrade = new PrimaryUpgradeEntry { Duration = 8f, DamageMultiplier = 2f },
+            SecondaryUpgrade = new SecondaryUpgradeEntry { Duration = 8f, DamageMultiplier = 2f },
+            ShieldRepairAmount = 30,
+            StructureRepairAmount = 20,
+            RapidCoolDuration = 20f,
+            DiagonalShotDuration = 15f,
+            PowerShotDuration = 20f,
+            TripleShotDuration = 15f
+        },
+        DifficultyPresets = new List<DifficultyPresetEntry>
+        {
+            new() { Name = "Easy", SpawnRateModifier = -50, EnemyHpModifier = -40, EnemySpeedModifier = -40, PlayerDamageMultiplier = 1.5f, LaserHeatRateModifier = -80, LaserCoolingRateModifier = 200 },
+            new() { Name = "Normal", SpawnRateModifier = 0, EnemyHpModifier = 0, EnemySpeedModifier = 0, PlayerDamageMultiplier = 1.0f, LaserHeatRateModifier = -66, LaserCoolingRateModifier = 100 },
+            new() { Name = "Hard", SpawnRateModifier = 40, EnemyHpModifier = 50, EnemySpeedModifier = 30, PlayerDamageMultiplier = 0.8f, LaserHeatRateModifier = -50, LaserCoolingRateModifier = 75 },
+            new() { Name = "Expert", SpawnRateModifier = 100, EnemyHpModifier = 100, EnemySpeedModifier = 60, PlayerDamageMultiplier = 0.5f, LaserHeatRateModifier = -33, LaserCoolingRateModifier = 50 }
         }
     };
 }
